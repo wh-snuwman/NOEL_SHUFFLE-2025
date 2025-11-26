@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Bonheur+Royale&family=Parisienne&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+canvas {
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#menu-background {
+    position:absolute;
+    top: -20%;
+    filter: blur(5px);
+}
+
+#top-bar{
+    position: absolute;
+    width: 100%;
+    height: 10%;
+    background-color: rgb(45, 148, 54);
+    
+}
+
+#title-box{
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    /* background-color: aqua; */
+}
+
+#main-title{
+    position: absolute;
+    font-family:"Bonheur Royale";
+    font-size: 1500%;
+    inline-size: 100%;
+    left: 50%;
+    top: 50%;
+    text-align: center;
+    transform: translate(-50%,-50%);
+    color: white;
+    text-shadow: -20px 20px black;
+}
+
+#game-box{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 1600px;
+    height: 900px;
+    background-color: aqua;
+}
+
+
+#account-box{
+    position: absolute;
+    width: 15%;
+    height: 100%;
+    left: 85%;
+    background-color: brown;
+}
+
+.account-btn{
+    position: absolute;
+    width: 20%;
+    height: 40%;
+    font-size: 15px;
+    background-color: white;
+    border: none;
+    border-radius: 10%;
+}
+#sign-in-btn{
+    left: 30%;
+}
+
+
+
+
+#main-box{
+    position: absolute;
+    top: 90%;
+    width: 100%;
+    height: 200%;
+    background-color: rgb(45, 148, 54);
+    
+}
+#timer{
+    color: white;
+    text-align: center;
+    /* justify-content: center; */
+    text-justify: center;
+    font-size: 300%;
+}
