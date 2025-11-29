@@ -27,6 +27,8 @@ export class PHI {
         return img_
     }
 
+
+
     display(size){
         const canvas = this.canvas;
         canvas.width = size[0]
@@ -171,7 +173,9 @@ export class PHI {
         return (Math.random() * (num2 - num1)) + num1
     }
 
-
+    
+    
+    
     rotate(obj,deg,mark="center",pos=[0,0]){
         const rad = deg * Math.PI / 180;
         const cos = Math.cos(rad);
@@ -206,7 +210,7 @@ export class PHI {
         }
 
         obj.vertex = rotated;
-        obj.angle += rad;
+        obj.angle += deg;
         return obj;
     }
 
