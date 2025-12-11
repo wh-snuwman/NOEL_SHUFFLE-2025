@@ -104,6 +104,60 @@ export function online(){
             }
 
 
+        } else if (msg.code == '0.4.0.0') {
+            // window.playersDeck[msg.player].push(msg.card)
+            addCard(msg.player,msg.card)
+            console.log(msg.card)
+
+
+        } else if (msg.code == '0.4.0.1') {
+            const index = window.playersDeck[msg.player].indexOf(msg.card)
+            window.playersDeck[msg.player].splice(index,1)
+            window.resetFixPos = true
+            
+
+
+        }else if (msg.code == '0.4.1.0'){
+            window.centerDeck = msg.card
+            console.log('✅ 센터카드 받음!')
+
+        }else if (msg.code == '0.4.1.1'){
+            window.drawPile = msg.deck
+            console.log('✅ 드로우파일 받음!')
+
+        }else if (msg.code == '0.4.2.0'){
+            window.turn = msg.turn
+            window.dropFlag = false
+            
+        }else if (msg.code == '0.4.3.0'){
+            if (msg.state == true || msg.state == false){
+                window.isAttack = msg.state
+                if (window.isAttack){
+                    console.log('✅ 공격 시작')
+                } else {
+                    console.log('✅ 공격 중단')
+                }
+            } else {
+                console.log('‼️  처리불가능 데이터 수신. 즉시 연결 중단.')
+                console.log('‼️  이메세지를 보면 즉시 신고해주세요.')
+            }
+
+        }else if (msg.code == '0.4.3.1'){
+           window.attackAmount = msg.amount
+            
+
+        }else if (msg.code == ''){
+            
+        }else if (msg.code == ''){
+            
+        }else if (msg.code == ''){
+            
+        }else if (msg.code == ''){
+            
+        }else if (msg.code == ''){
+            
+        }else if (msg.code == ''){
+            
         }
 
 

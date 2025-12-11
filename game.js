@@ -1,5 +1,7 @@
 import {PHI} from "/@phi/src/script/PHI.js"
 import {online} from '/socekt.js'
+import {canDrop} from '/canDrop.js'
+import  {onecard_attackCard,onecard_attackCardAmount,onecard_cards} from '/card.js'
 
 
 let mousePos = [0,0];
@@ -28,8 +30,8 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     phi.display([innerWidth,innerHeight]);
 
     const deck = {
-        BACK:await phi.imgLoad('/src/img/deck/BACK.png'),
-        TEST:await phi.imgLoad('/src/img/deck/TEST.png'),
+        JB:await phi.imgLoad('/src/img/deck/JB.png'),
+        JC:await phi.imgLoad('/src/img/deck/JC.png'),
 
         C1:await phi.imgLoad('/src/img/deck/C1.png'),
         C2:await phi.imgLoad('/src/img/deck/C2.png'),
@@ -92,6 +94,10 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
         SK:await phi.imgLoad('/src/img/deck/SK.png'),
         SA:await phi.imgLoad('/src/img/deck/SA.png'),
 
+        BACK:await phi.imgLoad('/src/img/deck/BACK.png'),
+        TEST:await phi.imgLoad('/src/img/deck/TEST.png'),
+        
+
     }
 
     const skinImg = [
@@ -115,7 +121,6 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
         },
     }
 
-
     const profileImg = {
         'noplayer':await phi.imgLoad('/src/img/profile/noplayer.png'),
         'test0':await phi.imgLoad('/src/img/profile/test0.png'),
@@ -136,35 +141,97 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
         short_bar : await phi.imgLoad('/src/img/ui/short_bar.png'),
         ready_btn : await phi.imgLoad('/src/img/ui/ready_btn.png'),
         ready_cancel_btn : await phi.imgLoad('/src/img/ui/ready_cancel_btn.png'),
+        main_title : await phi.imgLoad('/src/img/ui/main_title.png'),
     }
 
-    const mainMenuBtnMargin = 40;
+    const backLoopImg = [
+        await phi.imgLoad('src/img/brckground/loop/0.png'),
+        await phi.imgLoad('src/img/brckground/loop/1.png'),
+        await phi.imgLoad('src/img/brckground/loop/2.png'),
+        await phi.imgLoad('src/img/brckground/loop/3.png'),
+        await phi.imgLoad('src/img/brckground/loop/4.png'),
+        await phi.imgLoad('src/img/brckground/loop/5.png'),
+        await phi.imgLoad('src/img/brckground/loop/6.png'),
+        await phi.imgLoad('src/img/brckground/loop/7.png'),
+        await phi.imgLoad('src/img/brckground/loop/8.png'),
+        await phi.imgLoad('src/img/brckground/loop/9.png'),
+        await phi.imgLoad('src/img/brckground/loop/10.png'),
+        await phi.imgLoad('src/img/brckground/loop/11.png'),
+    ]
 
-    window.rank = [];
-    const res = await fetch("rank.json")
-    const data = await res.json()
-    window.rank = [...data.rank]
+    let backLoopNum = []
+    let backLoopObj = []
+
+    function addLoopObj(img,pos=[0,0]){
+        backLoopNum.push(0)
+        backLoopObj.push(phi.object(img,pos,null))
+    }
+
+    function loopSet(type=0,num,num1,Y){
+        if (type == 0){
+            backLoopNum[num] += 0.5;
+            if (backLoopNum[num] > backLoopObj[num].width){
+                backLoopNum[num] = 0
+            }
+            phi.Goto(backLoopObj[num],[backLoopNum[num],Y])
+            phi.blit(backLoopObj[num])
+
+            backLoopNum[num1] += 0.5;
+            if (backLoopNum[num1] > backLoopObj[num1].width){
+                backLoopNum[num1] = 0
+            }
+            phi.Goto(backLoopObj[num1],[backLoopNum[num1]-backLoopObj[num1].width+2,Y])
+            phi.blit(backLoopObj[num1])
+        
+
+        } else if (type == 1){
+            backLoopNum[num] -= 0.5;
+            if (backLoopNum[num] < -backLoopObj[num].width){
+                backLoopNum[num] = 0
+            }
+            phi.Goto(backLoopObj[num],[backLoopNum[num],Y])
+            phi.blit(backLoopObj[num])
+
+            backLoopNum[num1] -= 0.5;
+            if (backLoopNum[num1] < -backLoopObj[num1].width){
+                backLoopNum[num1] = 0
+            }
+            phi.Goto(backLoopObj[num1],[backLoopNum[num1]+backLoopObj[num1].width,Y])
+            phi.blit(backLoopObj[num1])
+        }
+
+
+
+    }
+
+    
+    console.log(backLoopObj)
+
+    const mainMenuBtnMargin = 40;
+    window.oneCardSet = [];
+    window.oneCardSet = [...onecard_cards]
     window.deckSizeRatio = 0.5
     window.cardSize = [deck.BACK.width*window.deckSizeRatio,deck.BACK.height*window.deckSizeRatio]
     window.cardsInf = []
-    for (let i = 0; i<52; i++){
+    for (let i = 0; i<54; i++){
         cardsInf.push({
             obj : phi.object(deck.TEST,[(innerWidth - window.cardSize[0])/2,(innerHeight - window.cardSize[1])/2],window.cardSize),
-            aprObj : phi.object(deck[window.rank[i]],[(innerWidth - window.cardSize[0])/2,(innerHeight - window.cardSize[1])/2],window.cardSize),
+            aprObj : phi.object(deck[window.oneCardSet[i]],[(innerWidth - window.cardSize[0])/2,(innerHeight - window.cardSize[1])/2],window.cardSize),
             isSelect: false,
             posFixFlag:false,
             pos1:[0,0],
             pos2:[0,0],
-            rank:window.rank[i],
+            rank:window.oneCardSet[i],
             show:true,
             owner:null,
             preClick:false,
         })
     }
 
-
     window.players = {}
     window.playersDeck = {}
+    window.drawPile = []
+
 
     window.posList = {
         'p0':[innerWidth/2,innerHeight-((window.cardSize[1]/2)*3)],
@@ -190,36 +257,43 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     window.description = null;
     window.skin = null;
     window.level = null;
-    window.rank = null;
+    window.oneCardSet = null;
     window.sceneStartFlag = false
     window.ready = false
-
     window.game = false;
-    
+
+    window.isAttack = false;
+    window.attackAmount = 0
+
+
     let selectFlag = false
     let selectUI = null;
     let selectDelay = 0
     let selectLock = false
 
-    window.dev = true;
+
+    // ================== TODO ================ //
+    window.dev = false;
+    // ================== TODO ================ //
+
+    window.addCard = (player,card) =>{
+        window.resetFixPos = true
+        window.playersDeck[player].push(card)
+    }
+
+    window.turn = null;
+    window.dropFlag = false
+    const centerDeckObj = phi.object(deck['TEST'],centerDeckPos,window.cardSize)
     online();
-    
     let codeInputSelect = false;
     let codeInput = '';
-    
     if (window.dev){
         codeInput = 'AAAAA'
     }
-
-    let resetFixPos = false
+    window.resetFixPos = false
     let cusorDelay = 0;
     let cusor = '';     
     
-    
-    function addCard(player,card){
-        resetFixPos = true
-        window.playersDeck[player].push(card)
-    }
     
     window.scene = 'ofline';
     // window.scene = 'menu-waiting-room';
@@ -240,9 +314,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
             waitingRoomUI:{
                 back_box : phi.object(uiImg.back_box,[(innerWidth-uiImg.back_box.width)/2,(innerHeight-uiImg.back_box.height)/2],null),
                 long_bar : phi.object(uiImg.long_bar,[(innerWidth-uiImg.long_bar.width)/2,(innerHeight-uiImg.back_box.height)/2 + 50],null),
-                
                 ready_btn : phi.object(uiImg.ready_btn,[(innerWidth-uiImg.ready_btn.width)/2 + 100,(innerHeight-uiImg.back_box.height)/2 + 180],null),
-
                 user_profile_0 : phi.object(uiImg.rect,[(innerWidth-uiImg.back_box.width)/2 + 50,(innerHeight-uiImg.back_box.height)/2 + 170],null),
                 user_profile_1 : phi.object(uiImg.rect,[(innerWidth-uiImg.back_box.width)/2 + 50,(innerHeight-uiImg.back_box.height)/2 + 270],null),
                 user_profile_2 : phi.object(uiImg.rect,[(innerWidth-uiImg.back_box.width)/2 + 50,(innerHeight-uiImg.back_box.height)/2 + 370],null),
@@ -256,8 +328,6 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
         }
     }
     resetUI()
-
-
     window.addEventListener('resize',(e)=>{
         phi.reSizeDisplay()
         resetUI()
@@ -266,60 +336,45 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     })
     
     
+    addLoopObj(backLoopImg[1]);
+    addLoopObj(backLoopImg[1]);
+    addLoopObj(backLoopImg[1]);
+    addLoopObj(backLoopImg[1]);
+    addLoopObj(backLoopImg[0]);
+    addLoopObj(backLoopImg[0]);
+    addLoopObj(backLoopImg[0]);
+    addLoopObj(backLoopImg[0]);
+
+
+    for (let i=0; i < ((window.innerWidth / 120)+2)/2; i++){
+        const randint = phi.random(2,10)
+        console.log([i*120 - backLoopImg[randint].width/2, - backLoopImg[randint].height/2])
+        addLoopObj(backLoopImg[randint],[i*240 - backLoopImg[randint].width/2, - backLoopImg[randint].height/2]);
+    }
+
 
     
     phi.mainLoop(() => {
-        if (downKey == 'q'){
-            // console.log(`💻 ${Object.keys(players)}`)
-            // console.log(`💻 ${Object.keys(playersDeck)}`)
-            const pName = Object.keys(players)
 
-            window.centerDeck = 'C2'
-
-            addCard(nickname,'SA')
-            addCard(nickname,'SK')
-            addCard(nickname,'SQ')
-            addCard(nickname,'SJ')
-            addCard(nickname,'S10')
-
-            addCard(pName[1],'DA')
-            addCard(pName[1],'DK')
-            addCard(pName[1],'DQ')
-            addCard(pName[1],'DJ')
-            addCard(pName[1],'D10')
-
-            addCard(pName[2],'HA')
-            addCard(pName[2],'HK')
-            addCard(pName[2],'HQ')
-            addCard(pName[2],'HJ')
-            addCard(pName[2],'H10')
-
-            addCard(pName[3],'CA')
-            addCard(pName[3],'CK')
-            addCard(pName[3],'CQ')
-            addCard(pName[3],'CJ')
-            addCard(pName[3],'C10')
-
-            window.center
-
-
-
-            console.log(`💻 ${(Object.values(players[nickname]))}`)
+        
+        ctx.clearRect(0, 0, textCanvas.width, textCanvas.height);
+        phi.fill(51/255,173/255,91/255,1)
+        
+        loopSet(1,0,1,10);
+        loopSet(1,2,3,innerHeight-10-backLoopObj[1].height);
+        loopSet(0,4,5,(innerHeight-backLoopObj[1].height)*0.9);
+        loopSet(0,6,7,(innerHeight-backLoopObj[1].height)*0.1);
+        
+        for (let i=8; i<backLoopObj.length;i++){
+            phi.moveX(backLoopObj[i],0.5)
+            if (backLoopObj[i].x > innerWidth){
+                phi.moveX(backLoopObj[i],-innerWidth - 200)
+            }
+            phi.moveY(backLoopObj[i],innerHeight*0.4 - backLoopObj[i].y)
+            phi.blit(backLoopObj[i])
         }
 
-
-        ctx.clearRect(0, 0, textCanvas.width, textCanvas.height);
-        phi.fill(0.1,0.1,0.1,1)
-
         if (window.scene == 'ingmae-onecard'){
-
-            // if(!window.sceneStartFlag){
-                
-            //     window.sceneStartFlag = true
-            // }
-
-
-
             for(let pName in window.players){
                 let playerInf = window.players[pName]
                 const nickname = playerInf.nickname
@@ -342,8 +397,8 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 let rank = inf.rank
                 let owner = inf.owner
                 let show = inf.show
-    
-    
+                
+                
                 for (let pName in window.playersDeck){
                     const myDeck = window.playersDeck[pName]
                     
@@ -355,16 +410,16 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                                 [(window.posList[pName][0] - (myDeck.length * window.cardSize[0])/3.25) + cardNumber * window.cardSize[0]/2, 
                                 window.posList[pName][1]]
                             )
+
                             phi.rotate(obj,20- obj.angle)
                             
                         } else {
                             
-                            phi.Goto(obj,
-                                [
-                                    (window.posList[pName][0] - (myDeck.length * window.cardSize[0])/2)+ cardNumber * window.cardSize[0], 
-                                    window.posList[pName][1]
-                                ]
-                            )
+                            phi.Goto(obj, [
+                                window.posList[pName][0] - (window.cardSize[0] * (myDeck.length - 1) / 2)
+                                + (cardNumber * window.cardSize[0]),
+                                window.posList[pName][1]
+                            ])
 
                             phi.rotate(obj,10- obj.angle)
     
@@ -373,7 +428,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                                 inf.posFixFlag = true
                             }
     
-                            if (resetFixPos){
+                            if (window.resetFixPos){
                                 inf.posFixFlag = false
                             }
                         }
@@ -381,16 +436,37 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                         owner = pName
                     }
     
-                    if (owner == window.nickname && (phi.isEncounterPos(obj,mousePos))){
-                        inf.isSelect  = !inf.isSelect
-                        if (inf.isSelect){
-                            selectCard = rank
-                        }
+                    if (owner == window.nickname && phi.isEncounterPos(obj, mousePos) && click){
+                        inf.isSelect = true
+                        selectCard = rank
                     }
     
                     if (owner == window.nickname){
                         if (selectCard == rank){
                             phi.Goto(obj,[inf.pos1[0],inf.pos1[1]-40])
+                            if (click && canDrop(selectCard,window.centerDeck,false) && !window.dropFlag && turn == window.nickname){
+                                
+
+                                if (window.isAttack){
+                                    if (onecard_attackCard.includes(selectCard) && canDrop(selectCard,window.centerDeck,false)){
+                                        window.dropFlag = true;
+                                        window.sc.send(JSON.stringify({
+                                            code:"0.4.0.1.0",
+                                            card:selectCard
+                                        }))
+                                    }
+                                } else {
+                                    window.dropFlag = true;
+                                    window.sc.send(JSON.stringify({
+                                        code:"0.4.0.1.0",
+                                        card:selectCard
+                                    }))
+                                }
+
+                                
+                            }
+
+
                         } else {
                             phi.Goto(obj,[inf.pos1[0],inf.pos1[1]])
                             
@@ -404,13 +480,17 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                         show = true
                     }
     
+
+
                     if (owner == null){
+                        phi.rotate(obj,0 - obj.angle)
                         if (window.centerDeck == rank){
                             phi.Goto(obj,
                                 [centerDeckPos[0]+window.cardSize[0]*1.5,centerDeckPos[1]]
                             )
                             show = true
                         } else {
+
                             phi.Goto(obj,
                                 centerDeckPos
                             )
@@ -422,8 +502,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     
                 phi.moveX(apr_obj,((obj.x) - apr_obj.x) / 7)
                 phi.moveY(apr_obj,((obj.y) - apr_obj.y) / 7)
-                phi.rotate(apr_obj,((obj.angle) - apr_obj.angle) / 7)
-                // Text(rank+' '+owner,[obj.x,obj.y+30])
+                phi.rotate(apr_obj,((obj.angle) - apr_obj.angle) /10)
                 if (show){
                     phi.blit(apr_obj)
                 } else {
@@ -434,6 +513,27 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 // phi.blit(obj)
             }
 
+            
+            if (phi.isEncounterPos(centerDeckObj,mousePos) && click && turn == window.nickname) {
+                window.sc.send(JSON.stringify({
+                    code:"0.4.0.0.0",
+                }))
+                
+            }
+            if (turn == window.nickname){
+                Text('당신의 차례 입니다!',[20,40],'40px','green')
+            } else {
+                Text('당신의 차례가 아닙니다',[20,40],'40px','red')
+            }
+
+
+
+            console.log(window.isAttack)
+            if (!window.isAttack){
+                Text('공격이 없습니다',[20,100],'40px','green')
+            } else {
+                Text(`공격을 받았습니다!${window.attackAmount}`,[20,100],'40px','red')
+            }
 
 
         } else if (window.scene == 'menu-game'){
@@ -652,7 +752,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
 
         if(downKey){downKey=null}
         if(click){click=false;}
-        if(resetFixPos){resetFixPos=false;}
+        if(window.resetFixPos){window.resetFixPos=false;}
 
 
     });
