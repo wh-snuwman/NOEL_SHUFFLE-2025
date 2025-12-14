@@ -10,114 +10,19 @@ body {
 
 canvas {
     position: absolute;
-    display: block;
+    /* display: block; */
     width: 100%;
     height: 100%;
 }
 
-#menu-background {
-    position:absolute;
-    width: 110%;
-    left: 45%;
-    transform: translate(-50%,0);
-    overflow: hidden;
-    top: -20%;
-    filter: blur(2.5px);
-}
+input {
+    position: relative;
+    opacity: 1;
 
-#top-bar{
-    position: absolute;
-    width: 100%;
-    height: 10%;
-    background-color: rgb(45, 148, 54);
+    background-color: transparent;
     
-}
-
-#title-box{
-    position: absolute;
-    width: 100%;
-    height: 50%;
-    top: 50%;
-    transform: translateY(-50%);
-    /* background-color: aqua; */
-}
-
-#main-title{
-    position: absolute;
-    font-family:"Bonheur Royale";
-    font-size: 1500%;
-    inline-size: 100%;
-    left: 50%;
-    top: 50%;
-    text-align: center;
-    transform: translate(-50%,-50%);
-    color: white;
-    text-shadow: -20px 20px black;
-}
-
-#game-box{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    width: 100%;
-    height: 50%;
-    background-color: aqua;
-}
-
-#main-box{
-    position: absolute;
-    top: 90%;
-    width: 100%;
-    height: 200%;
-    background-color: rgb(45, 148, 54);
-}
-
-
-#account-box{
-    position: absolute;
-    width: 15%;
-    height: 100%;
-    left: 85%;
-    background-color: brown;
-}
-
-.account-btn{
-    position: absolute;
-    width: 20%;
-    height: 40%;
-    font-size: 15px;
-    background-color: white;
     border: none;
-    border-radius: 10%;
-}
-
-.account-btn:active,
-.account-btn:focus {
-    background-color: rgb(199, 199, 199);
-    border: none;
-    border-radius: 10%;
-    outline: none; /* 포커스 시 기본 외곽선 제거(원하면 제거) */
-}
-
-/* 눌렀을 때 약간 눌린 효과를 주고 싶으면 추가 */
-.account-btn:active {
-    transform: translateY(2px);
-}
-
-
-#sign-in-btn{
-    left: 30%;
-}
-
-
-
-
-
-#timer{
-    color: white;
-    text-align: center;
-    /* justify-content: center; */
-    text-justify: center;
-    font-size: 300%;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
 }

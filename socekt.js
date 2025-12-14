@@ -16,6 +16,8 @@ export function online(){
         let msg = JSON.parse(event.data);
         if (msg.code == '0.1.1') {
             console.log(`✅ 로그인성공: ${window.nickname}`)
+            newSignal(`✅ 로그인성공`)
+
             window.login = true
             window.profile = msg.profile
             window.description = msg.description
@@ -23,17 +25,12 @@ export function online(){
             window.level = msg.level
             window.rank = msg.rank
 
-            // window.players[window.nickname] = {
-            //     nickname:window.nickname,
-            //     profile:window.profile,
-            //     level:window.level,
-            //     rank:window.rank,
-            //     description:window.description
-            // }
+            window.sceneStartFlag = false
+            window.scene = 'menu-game'
 
-
-        } else if (msg.code == '0.1.0'){
+        } else if (msg.code == '0.1.0'){   
             console.log(`❌ 로그인실패 TIP: ${msg.tip}`)
+            newSignal(`❌ ${msg.tip}`)
 
 
         } else if (msg.code == '0.3.0.1') {
@@ -45,7 +42,6 @@ export function online(){
                 code:'0.3.1',
                 roomcode:window.roomCode
             }))
-            // console.log(`✅ 새로운 룸을 만들 ${window.roomCode}`)
             
             
         } else if (msg.code == '0.3.1.0') {
@@ -148,15 +144,15 @@ export function online(){
            window.attackAmount = msg.amount
             
 
-        }else if (msg.code == ''){
-            
-        }else if (msg.code == ''){
-            
-        }else if (msg.code == ''){
-            
-        }else if (msg.code == ''){
-            
-        }else if (msg.code == ''){
+        }else if (msg.code == '0.2.1'){
+            console.log('✅ 가입성공! 이제 로그인해주세요')
+            newSignal('✅ 가입성공! 이제 로그인해주세요')
+            window.scene = 'menu-main'
+            window.sceneStartFlag = false
+        }else if (msg.code == '0.2.0.0'){
+            newSignal('❌ 이미사용중인 이름입니다')
+
+            console.log('❌ 가입실패. 닉네임 중복')
             
         }else if (msg.code == ''){
             
@@ -177,13 +173,25 @@ export function online(){
     
     sc.addEventListener('open', () => {
         window.sceneStartFlag = false
-        window.scene = 'menu-game';
-        sc.send(JSON.stringify({ 
-            code:"0.1",
-            nickname: window.nickname,
-            password: window.password, 
-            anonymous:true 
-        }));
+        window.scene = 'menu-main';
+        // ============================== debug ============================== //
+        // window.scene = 'menu-sign-up';
+
+        //TODO  ============================== debug ============================== //
+        
+        if (window.dev){
+            // window.scene = 'menu-ga'
+            window.nickname = `USER${phi.random(0,500)}`
+            window.password = '0000'
+
+            sc.send(JSON.stringify({ 
+                code:"0.1",
+                nickname: window.nickname,
+                password: window.password, 
+                // anonymous:true 
+            }));
+
+        }
 
         
     });

@@ -17,12 +17,18 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     await font.load();
     document.fonts.add(font);
     
-    function Text(text,pos,size='20px',color='white',font='basic'){
+    function Text(text,pos,size='20px',color='white',font='basic',align='left'){
         if (font == 'basic'){
             ctx.font = `${size} PF스타더스트`;
         }
-        ctx.fillStyle = color
+
+        ctx.fillStyle = color;
+        ctx.textAlign = align;
+        ctx.textBaseline = 'alphabetic'; // 기본값
+
         ctx.fillText(text, pos[0],pos[1]);
+        ctx.textAlign = 'left'
+        
     }
     
     textCanvas.width = innerWidth
@@ -144,6 +150,13 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
         main_title : await phi.imgLoad('/src/img/ui/main_title.png'),
         select_shape_bar : await phi.imgLoad('/src/img/ui/select_shape_bar.png'),
         table : await phi.imgLoad('/src/img/ui/select_shape_bar.png'),
+        start_btn: await phi.imgLoad('/src/img/ui/start_btn.png'),
+        sign_up_btn: await phi.imgLoad('/src/img/ui/sign_up_btn.png'),
+        login_btn: await phi.imgLoad('/src/img/ui/login_btn.png'),
+        input_bar: await phi.imgLoad('/src/img/ui/input_bar.png'),
+        back_box_basic: await phi.imgLoad('/src/img/ui/back_box_basic.png'),
+        signal_bar: await phi.imgLoad('/src/img/ui/signal_bar.png'),
+
     }
 
     const backLoopImg = [
@@ -160,6 +173,9 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
         await phi.imgLoad('src/img/brckground/loop/10.png'),
         await phi.imgLoad('src/img/brckground/loop/11.png'),
     ]
+
+
+    
 
     let backLoopNum = []
     let backLoopObj = []
@@ -254,6 +270,11 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
 
     window.nickname = `USER${phi.random(0,200)}`;
     window.password = '0000';
+
+    window.nickname = ``;
+    window.password = '';
+
+
     window.login = false;
     window.profile = null;
     window.description = null;
@@ -274,7 +295,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
 
 
     // ================== TODO ================ //
-    window.dev = false;
+    window.dev = true;
     // ================== TODO ================ //
 
     window.addCard = (player,card) =>{
@@ -288,16 +309,35 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     online();
     let codeInputSelect = false;
     let codeInput = '';
-    if (window.dev){
-        codeInput = 'AAAAA'
+
+    let inputSelects = {}
+    let inputDatas = {}
+    let inputCusorDelays = {};
+    let inputCusor = {};
+    
+    function addInput(name){
+        inputSelects[name] = false;
+        inputDatas[name] = '';
+        inputCusorDelays[name] = 0;
+        inputCusor[name] = '';
     }
+
+
+    function PasswordBlind(letter){
+        let l = ''
+        for (let i in letter){
+            l = l + '*'
+        }
+        return l;
+    }
+
+
     window.resetFixPos = false
     let cusorDelay = 0;
     let cusor = '';     
     
-    
+    selectUI
     window.scene = 'ofline';
-
     let selectShapeAprObj = phi.object(uiImg.select_shape_bar,[(innerWidth-uiImg.select_shape_bar.width)/2,(innerHeight-uiImg.select_shape_bar.height)/2],null);
     let shapeBtnSize = [uiImg.select_shape_bar.width/4,uiImg.select_shape_bar.height];
     let shapeBtnRatio = 0.9
@@ -333,8 +373,26 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 dev_inf_btn : phi.object(uiImg.dev_inf_btn,[(innerWidth-uiImg.dev_inf_btn.width)/2 + uiImg.dev_inf_btn.width*0.5 + mainMenuBtnMargin/2,(innerHeight-uiImg.back_box.height)/2 + 180],null),
                 main_menu_btn : phi.object(uiImg.main_menu_btn,[(innerWidth-uiImg.main_menu_btn.width)/2 + uiImg.main_menu_btn.width*1.5 + mainMenuBtnMargin*1.5,(innerHeight-uiImg.back_box.height)/2 + 180],null),
             },
+            menuMain:{
+                main_itle : phi.object(uiImg.main_title,[(innerWidth-uiImg.main_title.width)/2,(innerHeight-uiImg.main_title.height)/2 * 0.45],null),
+                login_btn : phi.object(uiImg.login_btn,[(innerWidth-uiImg.login_btn.width)/2,(innerHeight-uiImg.login_btn.height)/2 + 180],null),
+                sign_up_btn : phi.object(uiImg.sign_up_btn,[(innerWidth-uiImg.sign_up_btn.width)/2,(innerHeight-uiImg.sign_up_btn.height)/2 + 280],null),
+            },
 
-
+            menuSignUp:{
+                back_box_basic : phi.object(uiImg.back_box_basic,[(innerWidth-uiImg.back_box_basic.width)/2,(innerHeight-uiImg.back_box_basic.height)/2],null),
+                input_bar_nickname : phi.object(uiImg.input_bar,[(innerWidth-uiImg.input_bar.width)/2,(innerHeight-uiImg.input_bar.height)/2 - 160],null),
+                input_bar_password : phi.object(uiImg.input_bar,[(innerWidth-uiImg.input_bar.width)/2,(innerHeight-uiImg.input_bar.height)/2 - 35],null),
+                input_bar_password_check : phi.object(uiImg.input_bar,[(innerWidth-uiImg.input_bar.width)/2,(innerHeight-uiImg.input_bar.height)/2 + 90],null),
+                submit_btn : phi.object(uiImg.sign_up_btn,[(innerWidth-uiImg.sign_up_btn.width)/2,(innerHeight-uiImg.sign_up_btn.height)/2 + 360],null),
+            },
+            menuLogin:{
+                back_box_basic : phi.object(uiImg.back_box_basic,[(innerWidth-uiImg.back_box_basic.width)/2,(innerHeight-uiImg.back_box_basic.height)/2],null),
+                input_bar_nickname : phi.object(uiImg.input_bar,[(innerWidth-uiImg.input_bar.width)/2,(innerHeight-uiImg.input_bar.height)/2 - 80],null),
+                input_bar_password : phi.object(uiImg.input_bar,[(innerWidth-uiImg.input_bar.width)/2,(innerHeight-uiImg.input_bar.height)/2 + 40],null),
+                submit_btn : phi.object(uiImg.login_btn,[(innerWidth-uiImg.login_btn.width)/2,(innerHeight-uiImg.login_btn.height)/2 + 360],null),
+            },
+            
             waitingRoomUI:{
                 back_box : phi.object(uiImg.back_box,[(innerWidth-uiImg.back_box.width)/2,(innerHeight-uiImg.back_box.height)/2],null),
                 long_bar : phi.object(uiImg.long_bar,[(innerWidth-uiImg.long_bar.width)/2,(innerHeight-uiImg.back_box.height)/2 + 50],null),
@@ -359,7 +417,67 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
         textCanvas.height = innerHeight;
     })
     
-    
+    let BanLetter = [
+        'NumLock',
+        'Shift',
+        'Control',
+        'Enter',
+        'Meta',
+        'Alt',
+        'Tab',
+        'CapsLock',
+        'Escape',
+        'HangulMode',
+        'ContextMenu',
+        'HanjaMode',
+        'Pasue',
+        'Delete',
+        'End',
+        'PageDown',
+        'PageUp',
+        'Insert',
+        'Home',
+        'ScrollLock',
+        'ArrowUp',
+        'ArrowDown',
+        'ArrowLeft',
+        'ArrowRight',
+        'F1',
+        'F2',
+        'F3',
+        'F4',
+        'F5',
+        'F6',
+        'F7',
+        'F8',
+        'F9',
+        'F10',
+        'F11',
+        'F12',
+
+    ]
+
+
+
+    window.signal ={
+        obj:phi.object(uiImg.signal_bar,[(innerWidth - uiImg.signal_bar.width)/2,(innerHeight - uiImg.signal_bar.height)/2 - 380],null),
+        type:null,
+        text:'',
+        vis:false,
+        timer:0
+
+    }
+    phi.moveY(window.signal.obj,-150)
+
+    window.newSignal = function(text,code){
+        window.signal.text =  text
+        phi.moveY(window.signal.obj,-150)
+        window.signal.timer = Date.now() + 4000
+        window.signal.vis = true
+    }
+
+
+
     addLoopObj(backLoopImg[1]);
     addLoopObj(backLoopImg[1]);
     addLoopObj(backLoopImg[1]);
@@ -369,6 +487,13 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     addLoopObj(backLoopImg[0]);
     addLoopObj(backLoopImg[0]);
     
+
+
+    addInput('loginNick')
+    addInput('loginPw')
+    addInput('signUpNick')
+    addInput('signUpPw')
+    addInput('signUpPwC')
 
 
     for (let i=0; i < ((window.innerWidth / 120)+2)/2; i++){
@@ -382,7 +507,6 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     phi.mainLoop(() => {
         ctx.clearRect(0, 0, textCanvas.width, textCanvas.height);
         phi.fill(24/255,118/255,70/255,1)
-        
         loopSet(1,0,1,10);
         loopSet(1,2,3,innerHeight-10-backLoopObj[1].height);
         loopSet(0,4,5,(innerHeight-backLoopObj[1].height)*0.9);
@@ -616,15 +740,6 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
             for(let name in uiSet.gameMenuUI){
                 const ui = uiSet.gameMenuUI[name]
                 let fixObj = phi.object(ui.img,[ui.startX,ui.startY],null)
-                if(window.dev && name == 'join_btn'){
-                    window.sc.send(JSON.stringify({
-                        code:'0.3.1',
-                        roomcode:codeInput.toUpperCase()
-                    }))
-                    console.log('💻 방에 참가요청을 보냄')
-                    selectFlag = false;
-                    selectLock = false;
-                }
 
                 if (name != 'back_box' && phi.isEncounterPos(fixObj,mousePos)){
                         phi.moveY(ui,(ui.startY-10 -ui.y)/7)
@@ -816,9 +931,359 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 }   
 
             }
+        } else if (window.scene == 'menu-main'){
+            if(!window.sceneStartFlag){
+                for(let name in uiSet.menuMain){
+                    const ui = uiSet.menuMain[name]
+                    phi.moveY(ui,10)
+                }
+                window.sceneStartFlag = true
+            }
+
+            for(let name in uiSet.menuMain){
+                const ui = uiSet.menuMain[name]
+
+                phi.blit(ui)
+                
+                let fixObj = phi.object(ui.img,[ui.startX,ui.startY],null)
+                if (name != 'back_box' && phi.isEncounterPos(fixObj,mousePos)){
+                    phi.moveY(ui,(ui.startY-10 -ui.y)/7)
+                    
+                } else {
+                    phi.moveY(ui,(ui.startY -ui.y)/10)
+                }
+                phi.moveX(ui,(ui.startX -ui.x)/10)
+
+
+
+                if (name == 'login_btn'){
+                    if (phi.isEncounterPos(fixObj,mousePos) && click && !selectLock){
+                        phi.moveY(ui,5)
+                        selectDelay = Date.now() + 300
+                        selectFlag = true
+                        selectLock = true
+                        selectUI = name
+                    }
+                } else if (name == 'sign_up_btn'){
+                    if (phi.isEncounterPos(fixObj,mousePos) && click && !selectLock){
+                        phi.moveY(ui,5)
+                        selectDelay = Date.now() + 300
+                        selectFlag = true
+                        selectLock = true
+                        selectUI = name
+                    }
+
+
+
+                } else if (name == 'main_itle'){
+                    if (phi.isEncounterPos(fixObj,mousePos) && click ){
+                        phi.moveY(ui,5)
+                    }
+                }
+
+                if (selectFlag && (selectDelay < Date.now())){
+                    window.sceneStartFlag = false
+                    if (selectUI == 'login_btn'){
+                        window.scene = 'menu-login'
+                    } else if (selectUI == 'sign_up_btn'){
+                        window.scene = 'menu-sign-up'
+
+                    }
+                    selectFlag = false;
+                    selectLock = false;
+                 
+                }
+            }
+
+
+        } else if (window.scene == 'menu-sign-up'){
+
+            if(!window.sceneStartFlag){
+                for(let name in uiSet.menuSignUp){
+                    const ui = uiSet.menuSignUp[name]
+                    phi.moveY(ui,10)
+                }
+                window.sceneStartFlag = true
+            }
+
+            // console.log('asd')
+            for(let name in uiSet.menuSignUp){
+                const ui = uiSet.menuSignUp[name]
+                phi.blit(ui)
+                let fixObj = phi.object(ui.img,[ui.startX,ui.startY],null)
+                if (name != 'back_box_basic' && phi.isEncounterPos(fixObj,mousePos)){
+                    phi.moveY(ui,(ui.startY-10 -ui.y)/7)
+                    
+                } else {
+                    phi.moveY(ui,(ui.startY -ui.y)/10)
+                }
+
+                if (name  == 'input_bar_nickname'){
+                    if (phi.isEncounterPos(ui,mousePos) && click){
+                        inputSelects.signUpNick = true
+                        phi.moveY(ui,3)
+                        // inputDatas.signUpNick = true
+
+                    } else if (click){
+                        inputSelects.signUpNick = false
+                    }
+                    if (inputSelects.signUpNick){
+                        if (downKey && !BanLetter.includes(downKey)){
+                            console.log(downKey)
+                            if (downKey == 'Backspace'){
+                                inputDatas.signUpNick = inputDatas.signUpNick.slice(0,-1)
+                            } else {
+                                if (inputDatas.signUpNick.length < 20){
+                                    inputDatas.signUpNick = inputDatas.signUpNick + downKey
+                                } 
+                            }
+                        }
+                    }
+                } else if (name  == 'input_bar_password'){
+                    if (phi.isEncounterPos(ui,mousePos) && click){
+                        inputSelects.signUpPw = true
+                        phi.moveY(ui,3)
+                        // inputDatas.signUpPw = true
+
+                    } else if (click){
+                        inputSelects.signUpPw = false
+                    }
+                    if (inputSelects.signUpPw){
+                        if (downKey && !BanLetter.includes(downKey)){
+                            console.log(downKey)
+                            if (downKey == 'Backspace'){
+                                inputDatas.signUpPw = inputDatas.signUpPw.slice(0,-1)
+                            } else {
+                                inputDatas.signUpPw = inputDatas.signUpPw + downKey
+                            }
+                        }
+                    }
+                } else if (name  == 'input_bar_password_check'){
+                    if (phi.isEncounterPos(ui,mousePos) && click){
+                        inputSelects.signUpPwC = true
+                        phi.moveY(ui,3)
+
+                    } else if (click){
+                        inputSelects.signUpPwC = false
+                    }
+                    if (inputSelects.signUpPwC){
+                        if (downKey && !BanLetter.includes(downKey)){
+                            console.log(downKey)
+                            if (downKey == 'Backspace'){
+                                inputDatas.signUpPwC = inputDatas.signUpPwC.slice(0,-1)
+                            } else {
+                                inputDatas.signUpPwC = inputDatas.signUpPwC + downKey
+                            }
+                        }
+                    }
+                } else if (name == 'submit_btn'){
+                    if (phi.isEncounterPos(ui,mousePos) && click){
+                        phi.moveY(ui,4)
+                        selectDelay = Date.now() + 300
+                        selectFlag = true
+                        selectLock = true
+                    }
+                }
+            }
+            if (selectFlag && (selectDelay < Date.now())){
+                if (inputDatas.signUpNick.length >= 4){
+                    if (inputDatas.signUpPw.length >= 4){
+                        if (inputDatas.signUpPw == inputDatas.signUpPwC){
+                            sc.send(JSON.stringify({ 
+                                code:"0.2",
+                                nickname: inputDatas.signUpNick,
+                                password: inputDatas.signUpPw, 
+                            }));
+                            
+                        } else {
+                            newSignal('❗비밀번호와 비밀번확인이 같지않습니다')
+                        }
+                    } else {
+                        newSignal('❗비밀번호는 4자리 이상이어야 합니다')
+                    }
+
+                } else {
+                    newSignal('❗ 이름은 4자리 이상이어야 합니다')
+                }
+                
+                selectFlag = false;
+                selectLock = false;
+            }
+
+
+            // #region
+                if (inputSelects.signUpNick == true){
+                    if (inputCusorDelays.signUpNick < Date.now()){
+                        inputCusorDelays.signUpNick = Date.now() + 500
+                        if (inputCusor.signUpNick){inputCusor.signUpNick = '';} else {inputCusor.signUpNick = '|'}
+                        if (inputDatas.signUpNick.length == 5){inputCusor.signUpNick = ''}
+                    }
+                } else {inputCusor.signUpNick = ''}
+                Text('닉네임 : ' + inputDatas.signUpNick + inputCusor.signUpNick, [(uiSet.menuSignUp.input_bar_nickname.x + 50),uiSet.menuSignUp.input_bar_nickname.y+65], '50px', 'white')
+                
+
+
+                if (inputSelects.signUpPw  == true){
+                    if (inputCusorDelays.signUpPw < Date.now()){
+                        inputCusorDelays.signUpPw = Date.now() + 500
+                        if (inputCusor.signUpPw){inputCusor.signUpPw = '';} else {inputCusor.signUpPw = '|'}
+                        if (inputDatas.signUpPw.length == 5){inputCusor.signUpPw = ''}
+                    }
+                } else {inputCusor.signUpPw = ''}
+                
+                if (inputDatas.signUpPw.length < 32){
+                    Text('비밀번호 : ' + PasswordBlind(inputDatas.signUpPw) + inputCusor.signUpPw, [(uiSet.menuSignUp.input_bar_password.x + 50),uiSet.menuSignUp.input_bar_password.y+65], '50px', 'white')
+                } else {
+                    Text('비밀번호 : ******************************...', [(uiSet.menuSignUp.input_bar_password.x + 50),uiSet.menuSignUp.input_bar_password.y+65], '50px', 'white')
+                }
+
+                if (inputSelects.signUpPwC  == true){
+                    if (inputCusorDelays.signUpPwC < Date.now()){
+                        inputCusorDelays.signUpPwC = Date.now() + 500
+                        if (inputCusor.signUpPwC){inputCusor.signUpPwC = '';} else {inputCusor.signUpPwC = '|'}
+                        if (inputDatas.signUpPwC.length == 5){inputCusor.signUpPwC = ''}
+                    }
+                } else {inputCusor.signUpPwC = ''}
+                
+                if (inputDatas.signUpPwC.length < 28){
+                    Text('비밀번호확인 : ' + PasswordBlind(inputDatas.signUpPwC) + inputCusor.signUpPwC, [(uiSet.menuSignUp.input_bar_password_check.x + 50),uiSet.menuSignUp.input_bar_password_check.y+65], '50px', 'white')
+                } else {
+                    Text('비밀번호확인 : **************************...', [(uiSet.menuSignUp.input_bar_password_check.x + 50),uiSet.menuSignUp.input_bar_password_check.y+65], '50px', 'white')
+                }
+                
+            // #endregion
+
+
+        }  else if (window.scene == 'menu-login'){
+            if(!window.sceneStartFlag){
+                for(let name in uiSet.menuLogin){
+                    const ui = uiSet.menuLogin[name]
+                    phi.moveY(ui,10)
+                }
+                window.sceneStartFlag = true
+            }
+
+            for(let name in uiSet.menuLogin){
+                const ui = uiSet.menuLogin[name]
+                phi.blit(ui)
+
+                let fixObj = phi.object(ui.img,[ui.startX,ui.startY],null)
+                if (name != 'back_box_basic' && phi.isEncounterPos(fixObj,mousePos)){
+                    phi.moveY(ui,(ui.startY-10 -ui.y)/7)
+                } else {
+                    phi.moveY(ui,(ui.startY -ui.y)/10)
+                }
+
+                if (name  == 'input_bar_nickname'){
+                    if (phi.isEncounterPos(ui,mousePos) && click){
+                        inputSelects.loginNick = true
+                        phi.moveY(ui,3)
+                        // inputDatas.loginNick = true
+
+                    } else if (click){
+                        inputSelects.loginNick = false
+                    }
+                    if (inputSelects.loginNick){
+                        if (downKey && !BanLetter.includes(downKey)){
+                            console.log(downKey)
+                            if (downKey == 'Backspace'){
+                                inputDatas.loginNick = inputDatas.loginNick.slice(0,-1)
+                            } else {
+                                if (inputDatas.loginNick.length < 20){
+                                    inputDatas.loginNick = inputDatas.loginNick + downKey
+                                } 
+                            }
+                        }
+                    }
+
+                } else if (name  == 'input_bar_password'){
+                    if (phi.isEncounterPos(ui,mousePos) && click){
+                        inputSelects.loginPw = true
+                        phi.moveY(ui,3)
+
+                    } else if (click){
+                        inputSelects.loginPw = false
+                    }
+                    if (inputSelects.loginPw){
+                        if (downKey && !BanLetter.includes(downKey)){
+                            console.log(downKey)
+                            if (downKey == 'Backspace'){
+                                inputDatas.loginPw = inputDatas.loginPw.slice(0,-1)
+                            } else {
+                                inputDatas.loginPw = inputDatas.loginPw + downKey
+                            }
+                        }
+                    }
+
+                } else if (name == 'submit_btn'){
+                    if (phi.isEncounterPos(ui,mousePos) && click && !selectFlag){
+                        phi.moveY(ui,4)
+                        selectDelay = Date.now() + 300
+                        selectFlag = true
+                        selectLock = true
+                    }
+                }
+
+            if (selectFlag && (selectDelay < Date.now())){
+                if (inputDatas.loginPw.length > 0 && inputDatas.loginNick.length > 0){
+                    sc.send(JSON.stringify({ 
+                        code:"0.1",
+                        nickname: inputDatas.loginNick,
+                        password: inputDatas.loginPw, 
+                        anonymous:false 
+                    }));
+                } else {
+                    newSignal('❗닉네임과 비밀번호를 모두 작성해주세요')
+                }
+
+
+                selectFlag = false;
+                selectLock = false;
+            }
+
+
+            // // #region
+                if (inputSelects.loginNick == true){
+                    if (inputCusorDelays.loginNick < Date.now()){
+                        inputCusorDelays.loginNick = Date.now() + 500
+                        if (inputCusor.loginNick){inputCusor.loginNick = '';} else {inputCusor.loginNick = '|'}
+                        if (inputDatas.loginNick.length == 5){inputCusor.loginNick = ''}
+                    }
+                } else {inputCusor.loginNick = ''}
+                Text('닉네임 : ' + inputDatas.loginNick + inputCusor.loginNick, [(uiSet.menuLogin.input_bar_nickname.x + 50),uiSet.menuLogin.input_bar_nickname.y+65], '50px', 'white')
+                
+
+
+                if (inputSelects.loginPw  == true){
+                    if (inputCusorDelays.loginPw < Date.now()){
+                        inputCusorDelays.loginPw = Date.now() + 500
+                        if (inputCusor.loginPw){inputCusor.loginPw = '';} else {inputCusor.loginPw = '|'}
+                        if (inputDatas.loginPw.length == 5){inputCusor.loginPw = ''}
+                    }
+                } else {inputCusor.loginPw = ''}
+                
+                if (inputDatas.loginPw.length < 32){
+                    Text('비밀번호 : ' + PasswordBlind(inputDatas.loginPw) + inputCusor.loginPw, [(uiSet.menuLogin.input_bar_password.x + 50),uiSet.menuLogin.input_bar_password.y+65], '50px', 'white')
+                } else {
+                    Text('비밀번호 : ******************************...', [(uiSet.menuLogin.input_bar_password.x + 50),uiSet.menuLogin.input_bar_password.y+65], '50px', 'white')
+                }
+
+
+            // // #endregion
+
+            }
         }
 
-        // phi.blit(ver_line)
+        
+        
+        phi.blit(signal.obj)
+        if (signal.timer > Date.now()){
+            phi.moveY(signal.obj,(signal.obj.startY - signal.obj.y)/7)
+        } else {
+            phi.moveY(signal.obj,(signal.obj.startY-150 - signal.obj.y)/7)
+        }
+        Text(signal.text, [(innerWidth/2),signal.obj.y+48], '40px', 'black',undefined,'center')
+
 
         if(downKey){downKey=null}
         if(click){click=false;}
