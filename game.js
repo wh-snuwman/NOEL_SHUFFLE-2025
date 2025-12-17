@@ -288,11 +288,6 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     window.music = new Audio(sound.music_1)
     music.loop = true;
     window.startAudioFlag = false;
-    
-    // window.addEventListener('mousemove', () => {
-        
-    // }, { once: true });
-
 
     window.nickname = `USER${phi.random(0,200)}`;
     window.password = '0000';
@@ -303,7 +298,6 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     window.description = null;
     window.skin = null;
     window.level = null;
-    // window.oneCardSet = null;
     window.sceneStartFlag = false
     window.ready = false
     window.game = false;
@@ -313,19 +307,13 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
 
     window.winner = null;
     window.gameSet = false;
-
     window.menuReset
-    // window.sceneChangeDelay = 0;
 
     let selectFlag = false
     let selectUI = null;
     let selectDelay = 0
     let selectLock = false
 
-
-    // ================== TODO ================ //
-    window.dev = true;
-    // ================== TODO ================ //
 
     window.addCard = (player,card) =>{
         window.resetFixPos = true
@@ -537,7 +525,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     addLoopObj(backLoopImg[0]); // 7
 
     addLoopObj(null,[0,0],'onlynum'); // 8
-
+    backLoopNum[8]=0.4;
     
     addInput('loginNick')
     addInput('loginPw')
@@ -558,23 +546,21 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     phi.mainLoop(() => {
         ctx.clearRect(0, 0, textCanvas.width, textCanvas.height);
         phi.fill(24/255,118/255,70/255,1)
-        loopSet(1,0,1,10);
-        loopSet(1,2,3,innerHeight-10-backLoopObj[1].height);
-        loopSet(0,4,5,(innerHeight-backLoopObj[1].height)*0.9);
-        loopSet(0,6,7,(innerHeight-backLoopObj[1].height)*0.1);
+        loopSet(0,0,1,10);
+        loopSet(0,2,3,innerHeight-10-backLoopObj[1].height);
+        
+        loopSet(1,4,5,(innerHeight-backLoopObj[1].height)*0.9);
+        loopSet(1,6,7,(innerHeight-backLoopObj[1].height)*0.1);
         
 
-
-        backLoopNum[8]++;
         for (let i=8; i<backLoopObj.length;i++){
             if (backLoopObj[i].x > innerWidth){
                 phi.moveX(backLoopObj[i],-innerWidth - 200)
             }
             const y = backLoopObj[i].y + innerHeight*0.4 - backLoopObj[i].y;
-            // phi.moveY(backLoopObj[i],innerHeight*0.4 - backLoopObj[i].y)
             phi.blit(backLoopObj[i])
 
-            phi.Goto(backLoopObj[i],[backLoopNum[8],y])
+            phi.Goto(backLoopObj[i],[backLoopNum[8]+backLoopObj[i].x ,y])
         }
 
         if (window.scene == 'ingmae-onecard'){
