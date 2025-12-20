@@ -1,7 +1,0 @@
-f(!window.sceneStartFlag){
-                for(let name in uiSet.waitingRoomUI){
-                    const ui = uiSet.waitingRoomUI[name]
-                    phi.moveY(ui,10)
-                }
-                window.sceneStartFlag = true
-            }

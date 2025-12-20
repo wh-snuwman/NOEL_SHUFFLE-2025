@@ -11,14 +11,7 @@ export class PHI {
 
         this.canvas = canvas_;
         this.app = new easyWebgl2(this.canvas);
-        this.objectList = []
-        this.object_ = {
-            img:null,
-            x:0,
-            y:0,
-            height:0,
-            vertex:null,
-        }
+
     }
 
 
@@ -52,6 +45,11 @@ export class PHI {
             startY : 0,
             startWidth : 0,
             startHeight : 0,
+
+            baseX:0,
+            baseY:0,
+            baseW:0,
+            baseH:0,
         };
 
         
@@ -60,8 +58,7 @@ export class PHI {
         obj.y = pos[1];
         obj.startX = obj.x
         obj.startY = obj.y
-
-
+        
         if (size === null){
             obj.width = img.width;
             obj.height = img.height;
@@ -69,6 +66,10 @@ export class PHI {
             obj.width = size[0];
             obj.height = size[1];
         }
+        obj.baseX = obj.x
+        obj.baseY = obj.y
+        obj.baseW = obj.width
+        obj.baseH = obj.height
 
         if (vertex == null){
             const x1 = obj.x;

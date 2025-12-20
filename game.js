@@ -18,6 +18,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     document.fonts.add(font);
     
     function Text(text,pos,size='20px',color='white',font='basic',align='left'){
+        ctx.save()
         if (font == 'basic'){
             ctx.font = `${size} PF스타더스트`;
         }
@@ -25,10 +26,9 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
         ctx.fillStyle = color;
         ctx.textAlign = align;
         ctx.textBaseline = 'alphabetic'; // 기본값
-
         ctx.fillText(text, pos[0],pos[1]);
         ctx.textAlign = 'left'
-        
+        ctx.restore()
     }
     
     textCanvas.width = innerWidth
@@ -358,7 +358,6 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
 
     }
     phi.Goto(window.signal.obj,[0,-150])
-    // window.signal.obj.startY += -
 
     window.newSignal = function(text,code){
         window.signal.text =  text
@@ -391,20 +390,24 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     let openSelectShape = false;
     let selectShape = null;
 
+
+    window.dpr = window.innerWidth / 1920
+
     window.uiSet = {}
     window.resetUI = function(){ 
+        // #region
         phi.Goto(selectShapeAprObj,[(innerWidth-uiImg.select_shape_bar.width)/2,(innerHeight-uiImg.select_shape_bar.height)/2]);
         phi.Goto(selectShapeObjs[0],[(innerWidth-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*1.5,(innerHeight-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]);
         phi.Goto(selectShapeObjs[1],[(innerWidth-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*0.5,(innerHeight-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]);
         phi.Goto(selectShapeObjs[2],[(innerWidth-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*-0.5,(innerHeight-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]);
         phi.Goto(selectShapeObjs[3],[(innerWidth-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*-1.5,(innerHeight-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]);
-        
         phi.Goto(signal.obj,[(innerWidth - uiImg.signal_bar.width)/2,(innerHeight - uiImg.signal_bar.height)/2 - 500])
-
+        // #endregion 
         uiSet = {
             gameMenuUI : {
                 back_box : phi.object(uiImg.back_box,[(innerWidth-uiImg.back_box.width)/2,(innerHeight-uiImg.back_box.height)/2],null),
                 long_bar : phi.object(uiImg.long_bar,[(innerWidth-uiImg.long_bar.width)/2,(innerHeight-uiImg.back_box.height)/2 + 50],null),
+                
                 join_btn : phi.object(uiImg.join_btn,[(innerWidth-uiImg.join_btn.width)/2 - uiImg.join_btn.width*1.5 - mainMenuBtnMargin*1.5,(innerHeight-uiImg.back_box.height)/2 + 180],null),
                 make_room_btn : phi.object(uiImg.make_room_btn,[(innerWidth-uiImg.make_room_btn.width)/2 - uiImg.make_room_btn.width*0.5 - mainMenuBtnMargin/2,(innerHeight-uiImg.back_box.height)/2 + 180],null),
                 dev_inf_btn : phi.object(uiImg.dev_inf_btn,[(innerWidth-uiImg.dev_inf_btn.width)/2 + uiImg.dev_inf_btn.width*0.5 + mainMenuBtnMargin/2,(innerHeight-uiImg.back_box.height)/2 + 180],null),
@@ -415,7 +418,6 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 login_btn : phi.object(uiImg.login_btn,[(innerWidth-uiImg.login_btn.width)/2,(innerHeight-uiImg.login_btn.height)/2 + 180],null),
                 sign_up_btn : phi.object(uiImg.sign_up_btn,[(innerWidth-uiImg.sign_up_btn.width)/2,(innerHeight-uiImg.sign_up_btn.height)/2 + 280],null),
             },
-
             menuSignUp:{
                 back_box_basic : phi.object(uiImg.back_box_basic,[(innerWidth-uiImg.back_box_basic.width)/2,(innerHeight-uiImg.back_box_basic.height)/2],null),
                 input_bar_nickname : phi.object(uiImg.input_bar,[(innerWidth-uiImg.input_bar.width)/2,(innerHeight-uiImg.input_bar.height)/2 - 160],null),
@@ -429,15 +431,13 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 input_bar_password : phi.object(uiImg.input_bar,[(innerWidth-uiImg.input_bar.width)/2,(innerHeight-uiImg.input_bar.height)/2 + 40],null),
                 submit_btn : phi.object(uiImg.login_btn,[(innerWidth-uiImg.login_btn.width)/2,(innerHeight-uiImg.login_btn.height)/2 + 360],null),
             },
-
             menuWinner:{
                 back_box_basic : phi.object(uiImg.back_box_basic,[(innerWidth-uiImg.back_box_basic.width)/2,(innerHeight-uiImg.back_box_basic.height)/2],null),
                 winner_profile_rect : phi.object(uiImg.winner_profile_rect,[(innerWidth-uiImg.winner_profile_rect.width)/2 - 300,(innerHeight-uiImg.winner_profile_rect.height)/2],null),
                 crown : phi.object(uiImg.crown,[(innerWidth-uiImg.crown.width)/2-300,(innerHeight-uiImg.crown.height)/2-100],null),
                 confirm_btn : phi.object(uiImg.confirm_btn,[(innerWidth-uiImg.confirm_btn.width)/2,(innerHeight-uiImg.confirm_btn.height)/2 + 360],null),
                 
-            },
-            
+            },     
             waitingRoomUI:{
                 back_box : phi.object(uiImg.back_box,[(innerWidth-uiImg.back_box.width)/2,(innerHeight-uiImg.back_box.height)/2],null),
                 long_bar : phi.object(uiImg.long_bar,[(innerWidth-uiImg.long_bar.width)/2,(innerHeight-uiImg.back_box.height)/2 + 50],null),
@@ -462,16 +462,45 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 table : phi.object(uiImg.table,[(innerWidth-uiImg.table.width),(innerHeight-uiImg.table.height)+150],null),
 
             }
-            
-            
+
         }
+        
     }
-    resetUI()
-    window.addEventListener('resize',(e)=>{
+
+
+    let blitLayer = []
+    function addBlit(obj){
+        blitLayer.push(obj)
+    }
+
+
+
+
+    const BASE_W = 1920;
+    const BASE_H = 1080;
+    window.uiScale = Math.min(
+        innerWidth / BASE_W,
+        innerHeight / BASE_H
+    )
+
+    let resizeTimer
+
+    function editPos(){
         phi.reSizeDisplay()
         resetUI()
         textCanvas.width  = innerWidth;
         textCanvas.height = innerHeight;
+    }
+
+
+
+
+
+    window.addEventListener('resize',()=>{
+        clearTimeout(resizeTimer)
+        resizeTimer = setTimeout(()=>{
+            editPos()
+        },100)
     })
     
     let BanLetter = [
@@ -537,12 +566,12 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
 
     for (let i=0; i < ((window.innerWidth / 120)+2)/2; i++){
         const randint = phi.random(2,10)
-        // console.log([i*120 - backLoopImg[randint].width/2, - backLoopImg[randint].height/2])
         addLoopObj(backLoopImg[randint],[i*240 - backLoopImg[randint].width/2, - backLoopImg[randint].height/2]);
     }
 
+    editPos()
+    resetUI()
 
-    
     phi.mainLoop(() => {
         ctx.clearRect(0, 0, textCanvas.width, textCanvas.height);
         phi.fill(24/255,118/255,70/255,1)
@@ -564,22 +593,23 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
         }
 
         if (window.scene == 'ingmae-onecard'){
+
+            // #region
             let num = 0
             for(let pName in window.players){
                 if (pName){
                     if (pName !== window.nickname){
-                        console.log(`test${num}`)
                         phi.blit(skin[`test${num}`].nomarl)
                         num++
                     }
                 }
-            }
+            } // 스킨 시스템(신경안써도 됨)
 
 
             for (let name in uiSet.ingameOnecard){
                 let ui = uiSet.ingameOnecard[name]
                 phi.blit(ui)
-            }
+            }// ui 시스템 (신경안써도됨)
 
             for (let inf of window.cardsInf){
                 let obj = inf.obj
@@ -606,8 +636,8 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                         } else {
                             
                             phi.Goto(obj, [
-                                window.posList[pName][0] - (window.cardSize[0] * (myDeck.length - 1) / 2)
-                                + (cardNumber * window.cardSize[0]),
+                                window.posList[pName][0] - (window.cardSize[0]*0.6 * (myDeck.length - 1) / 2)
+                                + (cardNumber * window.cardSize[0]*0.6),
                                 window.posList[pName][1]
                             ])
 
@@ -657,7 +687,6 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                                             code:"0.4.0.1.0",
                                             card:selectCard
                                         }))
-                                        // console.log('메세지 송신1')
 
                                     }
                                 }
@@ -701,15 +730,23 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 phi.moveY(apr_obj,((obj.y) - apr_obj.y) / 7)
                 phi.rotate(apr_obj,((obj.angle) - apr_obj.angle) /10)
                 if (show){
-                    phi.blit(apr_obj)
+                    addBlit(apr_obj)
                 } else {
                     const obj_ = {...apr_obj}
                     obj_.img = deck.BACK
-                    phi.blit(obj_)
+                    addBlit(obj_)
                 }
             }
+            // #endregion
 
- 
+            console.log(playersDeck)
+            for (let cardObj of blitLayer){
+                phi.blit(cardObj)
+            }
+            blitLayer = []
+
+
+
             if (openSelectShape){
                 phi.blit(selectShapeAprObj)
                 for (let num in selectShapeObjs){
@@ -741,7 +778,6 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 }))
                 selectShape = null;
             }
-
             phi.moveY(selectShapeAprObj,(selectShapeAprObj.startY - selectShapeAprObj.y)/10)
 
             if (phi.isEncounterPos(centerDeckObj,mousePos) && click && turn == window.nickname) {
@@ -767,17 +803,6 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 }
                 
             }
-            // if (turn == window.nickname){
-            //     Text('당신의 차례 입니다!',[20,40],'40px','green')
-            // } else {
-            //     Text('당신의 차례가 아닙니다',[20,40],'40px','red')
-            // }
-
-            // if (!window.isAttack){
-            //     Text('공격이 없습니다',[20,100],'40px','green')
-            // } else {
-            //     Text(`공격을 받았습니다!${window.attackAmount}`,[20,100],'40px','red')
-            // }
 
 
         } else if (window.scene == 'menu-game'){
@@ -1446,11 +1471,12 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
             }
         }
 
-        if (scene != 'ingame-onecard'){
-            Text('copyright 2025 white studio. All rights reserved', [10,innerHeight-30], '20px', 'white')
-            Text('Certain rights reserved by DLG', [10,innerHeight-10], '20px', 'white')
-            
-            
+        if (window.scene != 'ingame-onecard'){
+
+            const h = textCanvas.clientHeight
+            Text('copyright 2025 white studio. All rights reserved', [10,h-30], '20px', 'white')
+            Text('Certain rights reserved by DLG', [10,h-10], '20px', 'white')
+
             phi.blit(uiSet.discord_icon,[0,0],null)
             for (let name in uiSet.common){
                 let ui = uiSet.common[name];
@@ -1518,7 +1544,7 @@ document.addEventListener('mousemove',(e)=>{
 document.addEventListener('click',()=>{
     click=true;
     if (!window.startAudioFlag) {
-        window.music.play();
+        // window.music.play();
         window.startAudioFlag = true;
     }
 })

@@ -5,9 +5,20 @@ import  {onecard_attackCard,onecard_attackCardAmount,onecard_cards} from '/card.
 const phi = new PHI("canvas");
 
 export function online(){
-    const wsUrl =window.location.protocol === 'https:'
-        ? `wss://${window.localStorage.host}/ws`
-        : `ws://${window.location.host}/ws`;
+    // const wsUrl =window.location.protocol === 'https:'
+    //     ? `wss://${window.location.host}/ws`
+    //     : `ws://${window.location.host}/ws`;
+
+    // ===================== dev =====================  // 
+    window.devMode = true
+    // ===================== dev =====================  // 
+    if (window.devMode){
+        console.log('‼️ 현재 개발모드입니다')
+    }
+
+
+    const wsUrl = 'ws://localhost:3000'
+
 
     window.sc = new WebSocket(wsUrl)
     
@@ -278,18 +289,30 @@ export function online(){
     }
      
     sc.onerror = (err) => {
-        console.log('‼️ 에러발생:'+ err)
+        // console.log('‼️ 에러발생:'+ err)
     }
     
     sc.onclose = () => {
-        console.log('❗ 서버와의 연결이 종료 되었습니다.')
-        console.log('❗ 자동새로고침을 실행합니다.')
-        window.location.reload();
+        console.log('❗ 서버와의 연결을 실패 했습니다')
+        // window.location.reload();
     }
     
     sc.addEventListener('open', () => {
         window.sceneStartFlag = false
-        window.scene = 'menu-main';        
+        window.scene = 'menu-main'; 
+        
+        
+        if (window.devMode){
+            window.sc.send(JSON.stringify({
+                'code':'0.1',
+                "nickname":`USER${phi.random(0,500)}`,
+                'password':'0000',
+            }))
+        }
+
+
+
     });
+
 }
 
