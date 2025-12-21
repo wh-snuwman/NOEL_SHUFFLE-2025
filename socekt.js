@@ -5,9 +5,9 @@ import  {onecard_attackCard,onecard_attackCardAmount,onecard_cards} from '/card.
 const phi = new PHI("canvas");
 
 export function online(){
-    // const wsUrl =window.location.protocol === 'https:'
-    //     ? `wss://${window.location.host}/ws`
-    //     : `ws://${window.location.host}/ws`;
+    const wsUrl =window.location.protocol === 'https:'
+        ? `wss://${window.location.host}/ws`
+        : `ws://${window.location.host}/ws`;
 
     // ===================== dev =====================  // 
     window.devMode = false
@@ -17,7 +17,7 @@ export function online(){
     }
 
 
-    const wsUrl = 'ws://localhost:3000'
+    // const wsUrl = 'ws://localhost:3000'
 
 
     window.sc = new WebSocket(wsUrl)
