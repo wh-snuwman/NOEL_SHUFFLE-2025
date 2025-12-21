@@ -10,7 +10,7 @@ export function online(){
     //     : `ws://${window.location.host}/ws`;
 
     // ===================== dev =====================  // 
-    window.devMode = true
+    window.devMode = false
     // ===================== dev =====================  // 
     if (window.devMode){
         console.log('‼️ 현재 개발모드입니다')
@@ -48,9 +48,9 @@ export function online(){
             window.sceneStartFlag = false
             window.scene = 'menu-game'
 
-            if (window.devMode){
-                window.scene = 'ingmae-onecard';
-            }
+            // if (window.devMode){
+            //     window.scene = 'ingmae-onecard';
+            // }
 
 
         } else if (msg.code == '0.1.0'){   

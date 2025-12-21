@@ -132,6 +132,14 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
         'test1':await phi.imgLoad('/src/img/profile/test1.png'),
         'test2':await phi.imgLoad('/src/img/profile/test2.png'),
         'test3':await phi.imgLoad('/src/img/profile/test3.png'),
+        'test4':await phi.imgLoad('/src/img/profile/test3.png'),
+        'test5':await phi.imgLoad('/src/img/profile/test3.png'),
+        'test6':await phi.imgLoad('/src/img/profile/test3.png'),
+        'hb_logo':await phi.imgLoad('/src/img/profile/hb_logo.png'),
+        'wh_logo':await phi.imgLoad('/src/img/profile/wh_logo.png'),
+        'elf':await phi.imgLoad('/src/img/profile/elf.png'),
+        'rudolph':await phi.imgLoad('/src/img/profile/rudolph.png'),
+        'santa':await phi.imgLoad('/src/img/profile/santa.png'),
     }
 
     const uiImg = {
@@ -1585,7 +1593,7 @@ document.addEventListener('mousemove',(e)=>{
 document.addEventListener('click',()=>{
     click=true;
     if (!window.startAudioFlag) {
-        // window.music.play();
+        window.music.play();
         window.startAudioFlag = true;
     }
 })
