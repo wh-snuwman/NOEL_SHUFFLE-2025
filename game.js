@@ -1748,7 +1748,7 @@ document.addEventListener('mousemove',(e)=>{
 document.addEventListener('click',()=>{
     click=true;
     if (!window.startAudioFlag) {
-        // window.music.play();
+        window.music.play();
         window.startAudioFlag = true;
     }
 })
