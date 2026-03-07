@@ -1,4 +1,4 @@
-
+ 
 import { easyWebgl2 } from "/@phi/src/script/easyWebgl2.js"
 
 export class PHI {
@@ -11,7 +11,19 @@ export class PHI {
 
         this.canvas = canvas_;
         this.app = new easyWebgl2(this.canvas);
+        this.textCanvas = null;
+        this.ctx = null;
+        
+        this.autoResize = false;
+        this.settingList = {
+        }
+        
+    }
 
+    setting(name=String,value=Boolean){
+        if (Object.hasOwn(this.settingList,name)){
+            this.settingList[name] = value
+        }
     }
 
 
@@ -20,15 +32,71 @@ export class PHI {
         return img_
     }
 
-    reSizeDisplay(){
-        this.app.resizeCanvas()
+    textDisplay(id){
+        this.textCanvas = document.getElementById(id);
+        this.textCanvas.width = 1920;
+        this.textCanvas.height = 1080;
+        this.ctx = this.textCanvas.getContext('2d');
+        this.resizeDisplay()
     }
+
+    async font(name,path){
+        const font = new FontFace(name, `url(${path})`);
+        await font.load();
+        document.fonts.add(font);
+    }
+
+
+    text(text,pos=[0,0],size='20px',color='balck',font=null,align='left'){
+        if (this.ctx == null){
+            console.error('text canvas is not defined')
+            return;
+        }
+        this.ctx.save();
+        
+        if (font == null || font == undefined || typeof(font) != String){
+            this.ctx.font = `${size} serif`;
+        } else {
+            this.ctx.font = `${size} ${font}`;
+        }
+        
+        this.ctx.fillStyle = color;
+        this.ctx.textAlign = align;
+        this.ctx.textBaseline = 'alphabetic';
+        this.ctx.fillText(text, pos[0],pos[1]);
+        this.ctx.textAlign = 'left';
+        this.ctx.restore();
+    }
+
+
+    resizeTextCanvas(baseWidth = 1920, baseHeight = 1080) {
+        if (this.textCanvas != null){
+            const dpr = window.devicePixelRatio || 1
+            this.textCanvas.style.width = baseWidth + 'px'
+            this.textCanvas.style.height = baseHeight + 'px'
+            const displayWidth  = Math.floor(baseWidth * dpr)
+            const displayHeight = Math.floor(baseHeight * dpr)
+            if (this.textCanvas.width !== displayWidth || this.textCanvas.height !== displayHeight) {
+                this.textCanvas.width  = displayWidth
+                this.textCanvas.height = displayHeight
+                this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+            }
+        }
+    }
+
+
+    resizeDisplay(){
+        this.app.resizeCanvas()
+        this.resizeTextCanvas(this.canvas.width,this.canvas.height)
+    }
+
 
 
     display(size){
         const canvas = this.canvas;
         canvas.width = size[0]
         canvas.height = size[1]
+        this.resizeDisplay()
     }
 
     object(img, pos, size = null, vertex = null,texcoord=null){
@@ -44,12 +112,8 @@ export class PHI {
             startX : 0, 
             startY : 0,
             startWidth : 0,
-            startHeight : 0,
-
-            baseX:0,
-            baseY:0,
-            baseW:0,
-            baseH:0,
+            startHeight : 0, 
+            fillColor:null,
         };
 
         
@@ -58,7 +122,8 @@ export class PHI {
         obj.y = pos[1];
         obj.startX = obj.x
         obj.startY = obj.y
-        
+
+
         if (size === null){
             obj.width = img.width;
             obj.height = img.height;
@@ -66,10 +131,6 @@ export class PHI {
             obj.width = size[0];
             obj.height = size[1];
         }
-        obj.baseX = obj.x
-        obj.baseY = obj.y
-        obj.baseW = obj.width
-        obj.baseH = obj.height
 
         if (vertex == null){
             const x1 = obj.x;
@@ -103,24 +164,23 @@ export class PHI {
             obj.texcoord = texcoord;
         }
 
+
         return obj;
     }
 
-
-
     blit(obj_,mark='null'){
         const obj = {...obj_}
-
+        
         if (!obj.img) return;
 
         if ( mark == 'center' ){
             this.move(obj,-(obj.width/2),-(obj.height/2))
-            this.app.drawImage(obj.img,obj.x,obj.y,obj.width,obj.height,obj.vertex,obj.texcoord);
+            this.app.drawImage(obj.img,obj.x,obj.y,obj.width,obj.height,obj.vertex,obj.texcoord,obj.fillColor);
             this.move(obj,+(obj.width/2),+(obj.height/2))
 
 
         } else {
-            this.app.drawImage(obj.img,obj.x,obj.y,obj.width,obj.height,obj.vertex,obj.texcoord);
+            this.app.drawImage(obj.img,obj.x,obj.y,obj.width,obj.height,obj.vertex,obj.texcoord,obj.fillColor);
             
         }
 
@@ -131,9 +191,19 @@ export class PHI {
         this.app.update(func);
     }
 
-    fill(r,g,b,a){
-        this.app.clear(r,g,b,a);
+    fill(r,g,b,a=255){
+        if (this.ctx != null && this.textCanvas != null) {this.ctx.clearRect(0, 0, this.textCanvas.width, this.textCanvas.height)}
+        if (r <= 1 && g <= 1 && b <= 1 && a <= 1){
+            this.app.clear(
+                r,g,b,a
+            );
+        } else {
+            this.app.clear(
+                r/255,g/255,b/255,a/255
+            );
+        }
     }
+
 
     distanceGetObj(obj1,obj2,mark="center"){
         if (mark == 'center') {
@@ -159,6 +229,7 @@ export class PHI {
         }
         return false
     }
+
     random(num1,num2){
         if (num1 > num2) {
             console.error('랜덤오류. 최솟값이 최댓값보다 클수 없습니다')
@@ -174,6 +245,7 @@ export class PHI {
         }
         return (Math.random() * (num2 - num1)) + num1
     }
+
 
     rotate(obj,deg,mark="center",pos=[0,0]){
         const rad = deg * Math.PI / 180;
@@ -249,7 +321,6 @@ export class PHI {
             const y2 = obj_.y + obj_.height;
             obj_.vertex = [x1, y1,x2, y1,x1, y2,x1, y2,x2, y1,x2, y2]
             return obj_
-
         }
     }
     
@@ -272,7 +343,6 @@ export class PHI {
         obj.x += addX
         for(let i = 0; i < obj.vertex.length; i+=2){
             obj.vertex[ i ] += addX
-            // obj.vertex[ i + 1 ] += addX
         }
         return obj;
     }
@@ -285,16 +355,14 @@ export class PHI {
         return obj;
     }
 
-    Goto(obj,pos=Array,mark='zero'){
+    goto(obj,pos=Array,mark='zero'){
         let addX = pos[0] - obj.x
         let addY = pos[1] - obj.y 
-        
         
         if (mark == 'center'){
             addX -= obj.width/2 
             addY -= obj.height/2
         }
-
 
         obj.x +=  pos[0] - obj.x
         obj.y += pos[1] - obj.y 
@@ -319,8 +387,12 @@ export class PHI {
             }
         }
     }
-
-
-
 }
 
+PHI.prototype.obj = PHI.prototype.object;
+PHI.prototype.loop = PHI.prototype.mainLoop;
+PHI.prototype.loop = PHI.prototype.mainLoop;
+PHI.prototype.movex = PHI.prototype.moveX;
+PHI.prototype.movey = PHI.prototype.moveY;
+PHI.prototype.Goto = PHI.prototype.goto;
+PHI.prototype.reSizeDisplay = PHI.prototype.resizeDisplay;

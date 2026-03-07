@@ -173,11 +173,13 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
         confirm_btn: await phi.imgLoad('/src/img/ui/confirm_btn.png'),
         winner_profile_rect: await phi.imgLoad('/src/img/ui/winner_profile_rect.png'),
         bottom_bar: await phi.imgLoad('/src/img/ui/bottom_bar.png'),
+        no_account_start_btn : await phi.imgLoad('/src/img/ui/no_account_start_btn.png'),
         
         arrow_left: await phi.imgLoad('/src/img/ui/arrow_left.png'),
         arrow_right: await phi.imgLoad('/src/img/ui/arrow_right.png'),
         profile_margin_box: await phi.imgLoad('/src/img/ui/profile_margin_box.png'),
         red_box: await phi.imgLoad('/src/img/ui/red_box.png'),
+        
 
     }
 
@@ -321,6 +323,9 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     window.gameSet = false;
     window.menuReset
     window.cancelSeven = 0
+    
+    window.anonymous = false
+
     let selectFlag = false
     let selectUI = null;
     let selectDelay = 0
@@ -428,9 +433,10 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 main_menu_btn : phi.object(uiImg.main_menu_btn,[(innerWidth-uiImg.main_menu_btn.width)/2 + uiImg.main_menu_btn.width*1.5 + mainMenuBtnMargin*1.5,(innerHeight-uiImg.back_box.height)/2 + 180],null),
             },
             menuMain:{
-                main_itle : phi.object(uiImg.main_title,[(innerWidth-uiImg.main_title.width)/2,(innerHeight-uiImg.main_title.height)/2 * 0.45],null),
-                login_btn : phi.object(uiImg.login_btn,[(innerWidth-uiImg.login_btn.width)/2,(innerHeight-uiImg.login_btn.height)/2 + 180],null),
-                sign_up_btn : phi.object(uiImg.sign_up_btn,[(innerWidth-uiImg.sign_up_btn.width)/2,(innerHeight-uiImg.sign_up_btn.height)/2 + 280],null),
+                main_itle : phi.object(uiImg.main_title,[(innerWidth-uiImg.main_title.width)/2,(innerHeight-uiImg.main_title.height)/2 * 0.2],null),
+                login_btn : phi.object(uiImg.login_btn,[(innerWidth-uiImg.login_btn.width)/2,(innerHeight-uiImg.login_btn.height)/2 + 150],null),
+                sign_up_btn : phi.object(uiImg.sign_up_btn,[(innerWidth-uiImg.sign_up_btn.width)/2,(innerHeight-uiImg.sign_up_btn.height)/2 + 250],null),
+                no_account_start_btn : phi.object(uiImg.no_account_start_btn,[(innerWidth-uiImg.no_account_start_btn.width)/2,(innerHeight-uiImg.no_account_start_btn.height)/2 + 350],null),
             },
             menuSignUp:{
                 back_box_basic : phi.object(uiImg.back_box_basic,[(innerWidth-uiImg.back_box_basic.width)/2,(innerHeight-uiImg.back_box_basic.height)/2],null),
@@ -470,8 +476,9 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 discord_icon : phi.object(uiImg.discord_icon,[(innerWidth-uiImg.discord_icon.width) - 190,(innerHeight-uiImg.discord_icon.height)-20],null),
                 DGL_icon : phi.object(uiImg.DGL_icon,[(innerWidth-uiImg.DGL_icon.width)-100,(innerHeight-uiImg.DGL_icon.height)-20],null),
                 instagram_icon : phi.object(uiImg.instagram_icon,[(innerWidth-uiImg.instagram_icon.width)-20,(innerHeight-uiImg.instagram_icon.height)-20],null),
-
+                back_btn : phi.object(uiImg.back_btn,[-180,35],null),
             },
+
             ingameOnecard:{
                 table : phi.object(uiImg.table,[(innerWidth-uiImg.table.width)/2,(innerHeight-uiImg.table.height)+150],null),
                 bottom_bar : phi.object(uiImg.bottom_bar,[(innerWidth-uiImg.bottom_bar.width)/2,(innerHeight-uiImg.bottom_bar.height)+160],null),
@@ -522,10 +529,12 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     }
 
     window.addEventListener('resize',()=>{
-        clearTimeout(resizeTimer)
-        resizeTimer = setTimeout(()=>{
-            editPos()
-        },100)
+        // clearTimeout(resizeTimer)
+        
+        phi.reSizeDisplay()
+        editPos()
+        // resizeTimer = setTimeout(()=>{
+        // },50)
     })
     
     let BanLetter = [
@@ -577,9 +586,9 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     addLoopObj(backLoopImg[0]);
     addLoopObj(backLoopImg[0]);
     addLoopObj(backLoopImg[0]); // 7
-
     addLoopObj(null,[0,0],'onlynum'); // 8
-    backLoopNum[8]=0.4;
+    // backLoopNum[8]=0.4;
+    let backLoopIcon_Num = 0; 
     
     addInput('loginNick')
     addInput('loginPw')
@@ -589,7 +598,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     // #endregion
 
 
-    for (let i=0; i < ((window.innerWidth / 120)+2)/2; i++){
+    for (let i=0; i < 10; i++){ // back loop icon define
         const randint = phi.random(2,10)
         addLoopObj(backLoopImg[randint],[i*240 - backLoopImg[randint].width/2, - backLoopImg[randint].height/2]);
     }
@@ -599,22 +608,22 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
 
     phi.mainLoop(() => {
         ctx.clearRect(0, 0, textCanvas.width, textCanvas.height);
-        phi.fill(24/255,118/255,70/255,1)
+        phi.fill(24,118,70)
         loopSet(0,0,1,10);
         loopSet(0,2,3,innerHeight-10-backLoopObj[1].height);
         loopSet(1,4,5,(innerHeight-backLoopObj[1].height)*0.9);
         loopSet(1,6,7,(innerHeight-backLoopObj[1].height)*0.1);
         
-
         for (let i=8; i<backLoopObj.length;i++){
-            if (backLoopObj[i].x > innerWidth){
-                phi.moveX(backLoopObj[i],-innerWidth - 200)
-            }
             const y = backLoopObj[i].y + innerHeight*0.4 - backLoopObj[i].y;
+            phi.goto(backLoopObj[i],[
+                ((i-8)*(240) + backLoopIcon_Num) % (phi.canvas.width*1.3) - backLoopImg[2].width/2 - (phi.canvas.width*0.3)/2,
+                y
+            ]);
             phi.blit(backLoopObj[i])
-
-            phi.Goto(backLoopObj[i],[backLoopNum[8]+backLoopObj[i].x ,y])
         }
+
+        backLoopIcon_Num += 0.4; // backLoopIcon speed
 
         if (window.scene == 'ingmae-onecard'){
 
@@ -636,9 +645,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
             }// ui 시스템 (신경안써도됨)
             addBlit({obj:centerDeckObj,layerRank:54})
 
-
-
-
+            
             for (let inf of window.cardsInf){
                 inf.owner = null
                 let obj = inf.obj
@@ -1189,13 +1196,26 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                         playSound('click')
                     }
 
-
-
                 } else if (name == 'main_itle'){
                     if (phi.isEncounterPos(fixObj,mousePos) && click ){
                         phi.moveY(ui,5)
                     }
+                } else if (name == 'no_account_start_btn'){
+                    if (phi.isEncounterPos(fixObj,mousePos) && click && !selectLock){
+                        playSound('click')
+                        window.nickname = `anymos${phi.random(-1000000000,1000000000)}`
+                        window.password = `${phi.randomFloat(-100000,100000)}${phi.randomFloat(-100000,100000)}${phi.randomFloat(-100000,100000)}${phi.randomFloat(-100000,100000)}`
+                        window.anonymous = true
+                        sc.send(JSON.stringify({ 
+                            code:"0.2",
+                            nickname: window.nickname,
+                            password: window.password, 
+                        }));
+
+                    }
                 }
+
+
 
                 if (selectFlag && (selectDelay < Date.now())){
                     
@@ -1204,8 +1224,9 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                         window.scene = 'menu-login'
                     } else if (selectUI == 'sign_up_btn'){
                         window.scene = 'menu-sign-up'
-
                     }
+
+
                     selectFlag = false;
                     selectLock = false;
                  
@@ -1219,7 +1240,6 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
             }
 
         } else if (window.scene == 'menu-sign-up'){
-
             if(!window.sceneStartFlag){
                 for(let name in uiSet.menuSignUp){
                     const ui = uiSet.menuSignUp[name]
@@ -1673,7 +1693,6 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
         }
 
 
-
         if (window.scene !== 'ingmae-onecard'){
 
             const h = textCanvas.clientHeight
@@ -1685,13 +1704,17 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 let ui = uiSet.common[name];
                 
                 let fixObj = phi.object(ui.img,[ui.startX,ui.startY],null)
-                if (name != 'back_box' && phi.isEncounterPos(fixObj,mousePos)){
+                if (name != 'back_box' && name != 'back_btn' && phi.isEncounterPos(fixObj,mousePos)){
                     phi.moveY(ui,(ui.startY-10 -ui.y)/7)
                     
                 } else {
                     phi.moveY(ui,(ui.startY -ui.y)/10)
                 }
-                phi.moveX(ui,(ui.startX -ui.x)/10)
+                
+                if (name != 'back_btn'){
+                    phi.moveX(ui,(ui.startX -ui.x)/10)
+                }
+
                 phi.blit(ui)
                 
                 
@@ -1706,6 +1729,35 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 } else if (name == 'instagram_icon'){
                     if (phi.isEncounterPos(ui,mousePos) && click){
                         window.open('https://www.instagram.com/wh.snuwman/')
+                    }
+                } else if (name == 'back_btn'){
+                    if (phi.isEncounterPos(ui,mousePos)){
+                        phi.moveX(ui,(ui.startX+50 - ui.x) / 10);
+                        if (click){
+                            
+                            if (scene == 'menu-game'){
+                                location.reload()
+
+                            } else if (scene == 'menu-waiting-room'){
+                                location.reload()
+                                // sceneStartFlag = false;
+                                // scene = 'menu-game';
+                            } else if (scene == 'menu-main'){
+                                location.reload()
+                            } else if (scene == 'menu-sign-up'){
+                                location.reload()
+                            } else if (scene == 'menu-login'){
+                                location.reload()
+                            } else if (scene == 'menu-winer'){
+                                // 없음
+                            } else if (scene == 'menu-event-mode'){
+                                location.reload()
+                            }
+
+
+                        }
+                    } else {
+                        phi.moveX(ui,(ui.startX -ui.x)/10)
                     }
                 }
 
@@ -1748,7 +1800,7 @@ document.addEventListener('mousemove',(e)=>{
 document.addEventListener('click',()=>{
     click=true;
     if (!window.startAudioFlag) {
-        window.music.play();
+        // window.music.play();
         window.startAudioFlag = true;
     }
 })
