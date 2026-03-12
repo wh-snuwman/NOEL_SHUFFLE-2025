@@ -10,35 +10,14 @@ let downKey = null;
 const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 (async () => {
-    const phi = new PHI("canvas");
-    const textCanvas = document.getElementById('text-canvas')
-    const ctx = textCanvas.getContext('2d')
-    const font = new FontFace('PF스타더스트', 'url(/src/font/PF스타더스트.ttf)');
-    await font.load();
-    document.fonts.add(font);
-    
-    function Text(text,pos,size='20px',color='white',font='basic',align='left'){
-        ctx.save()
-        if (font == 'basic'){
-            ctx.font = `${size} PF스타더스트`;
-        }
-
-        ctx.fillStyle = color;
-        ctx.textAlign = align;
-        ctx.textBaseline = 'alphabetic'; // 기본값
-        ctx.fillText(text, pos[0],pos[1]);
-        ctx.textAlign = 'left'
-        ctx.restore()
-    }
-    
-    textCanvas.width = innerWidth
-    textCanvas.height = innerHeight
+    const phi = new PHI("display-canvas");
+    phi.textDisplay("text-canvas");
+    phi.font('basic','/src/font/PF스타더스트.ttf');
     phi.display([innerWidth,innerHeight]);
 
     window.deck = {
         JB:await phi.imgLoad('/src/img/deck/JB.png'),
         JC:await phi.imgLoad('/src/img/deck/JC.png'),
-
         C1:await phi.imgLoad('/src/img/deck/C1.png'),
         C2:await phi.imgLoad('/src/img/deck/C2.png'),
         C3:await phi.imgLoad('/src/img/deck/C3.png'),
@@ -53,8 +32,6 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
         CQ:await phi.imgLoad('/src/img/deck/CQ.png'),
         CK:await phi.imgLoad('/src/img/deck/CK.png'),
         CA:await phi.imgLoad('/src/img/deck/CA.png'),
-
-
         H1:await phi.imgLoad('/src/img/deck/H1.png'),
         H2:await phi.imgLoad('/src/img/deck/H2.png'),
         H3:await phi.imgLoad('/src/img/deck/H3.png'),
@@ -251,8 +228,8 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     window.cardsInf = []
     for (let i = 0; i<54; i++){
         cardsInf.push({
-            obj : phi.object(deck.TEST,[(innerWidth - window.cardSize[0])/2,(innerHeight - window.cardSize[1])/2],window.cardSize),
-            aprObj : phi.object(deck[window.oneCardSet[i]],[(innerWidth - window.cardSize[0])/2,(innerHeight - window.cardSize[1])/2],window.cardSize),
+            obj : phi.object(deck.TEST,[(phi.width - window.cardSize[0])/2,(phi.height - window.cardSize[1])/2],window.cardSize),
+            aprObj : phi.object(deck[window.oneCardSet[i]],[(phi.width - window.cardSize[0])/2,(phi.height - window.cardSize[1])/2],window.cardSize),
             isSelect: false,
             posFixFlag:false,
             pos1:[0,0],
@@ -270,13 +247,13 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
 
 
     window.posList = {
-        'p0':[innerWidth/2,innerHeight-((window.cardSize[1]/2)*3)],
+        'p0':[phi.width/2,phi.height-((window.cardSize[1]/2)*3)],
         'p1':[300,500],
-        'p2':[innerWidth/2,400],
-        'p3':[innerWidth-300,500],
+        'p2':[phi.width/2,400],
+        'p3':[phi.width-300,500],
     }
-    const centerDeckPos = [(innerWidth - window.cardSize[0])/2 - 75,(innerHeight - window.cardSize[1])/2 + 150]
-    const ver_line = phi.object(deck.TEST,[innerWidth/2,0],[1,innerHeight])
+    const centerDeckPos = [(phi.width - window.cardSize[0])/2 - 75,(phi.height - window.cardSize[1])/2 + 150]
+    const ver_line = phi.object(deck.TEST,[phi.width/2,0],[1,phi.height])
     let selectCard = null; 
     window.centerDeck = ''
 
@@ -363,7 +340,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     let pass = 0;
 
     window.signal ={
-        obj:phi.object(uiImg.signal_bar,[(innerWidth - uiImg.signal_bar.width)/2,(innerHeight - uiImg.signal_bar.height)/2 - 380],null),
+        obj:phi.object(uiImg.signal_bar,[(phi.width - uiImg.signal_bar.width)/2,(phi.height - uiImg.signal_bar.height)/2 - 380],null),
         type:null,
         text:'',
         vis:false,
@@ -385,7 +362,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     
     selectUI
     window.scene = 'ofline';
-    let selectShapeAprObj = phi.object(uiImg.select_shape_bar,[(innerWidth-uiImg.select_shape_bar.width)/2,(innerHeight-uiImg.select_shape_bar.height)/2],null);
+    let selectShapeAprObj = phi.object(uiImg.select_shape_bar,[(phi.width-uiImg.select_shape_bar.width)/2,(phi.height-uiImg.select_shape_bar.height)/2],null);
     let shapeBtnSize = [uiImg.select_shape_bar.width/4,uiImg.select_shape_bar.height];
     let shapeBtnRatio = 0.9
     let shapeBtnResize = [shapeBtnSize[0] * shapeBtnRatio,shapeBtnSize[1] * shapeBtnRatio]
@@ -400,106 +377,137 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     window.eventModeSelectPw = '20251225'
 
     let selectShapeObjs = [
-        phi.object(deck.TEST,[(innerWidth-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*1.5,(innerHeight-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]),
-        phi.object(deck.TEST,[(innerWidth-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*0.5,(innerHeight-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]),
-        phi.object(deck.TEST,[(innerWidth-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*-0.5,(innerHeight-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]),
-        phi.object(deck.TEST,[(innerWidth-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*-1.5,(innerHeight-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]),
+        phi.object(deck.TEST,[(phi.width-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*1.5,(phi.height-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]),
+        phi.object(deck.TEST,[(phi.width-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*0.5,(phi.height-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]),
+        phi.object(deck.TEST,[(phi.width-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*-0.5,(phi.height-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]),
+        phi.object(deck.TEST,[(phi.width-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*-1.5,(phi.height-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]),
     ];
     
     let openSelectShape = false;
     let selectShape = null;
 
+    const BASE_W = 1920;
+    const BASE_H = 1080;
 
-    window.dpr = window.innerWidth / 1920
+    window.uiScale = Math.min(
+        phi.width / BASE_W,
+        phi.height / BASE_H
+    )
 
-    window.uiSet = {}
+    window.dpr = phi.dpr;
+    window.uiSet = {};
+    window.isMobile = false;
+
+    
+    navigator.userAgentData.getHighEntropyValues(['platform', 'model', 'mobile'])
+    .then(ua => {
+        isMobile = ua.mobile
+    });
+
+
+
+    function scaleObj(img, pos, size) {
+        let s = 1
+        if (isMobile){
+            s =  1
+        } else {
+            s = 1
+        }
+        const x = pos[0];
+        const y = pos[1]; 
+        const w = (size ? size[0] : img.width) * s;
+        const h = (size ? size[1] : img.height) * s;
+        const obj = phi.object(img, [x * s, y * s], [w, h]);
+        
+        return obj 
+    }
+
+    
     window.resetUI = function(){ 
-        // #region
-        phi.Goto(selectShapeAprObj,[(innerWidth-uiImg.select_shape_bar.width)/2,(innerHeight-uiImg.select_shape_bar.height)/2]);
-        phi.Goto(selectShapeObjs[0],[(innerWidth-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*1.5,(innerHeight-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]);
-        phi.Goto(selectShapeObjs[1],[(innerWidth-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*0.5,(innerHeight-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]);
-        phi.Goto(selectShapeObjs[2],[(innerWidth-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*-0.5,(innerHeight-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]);
-        phi.Goto(selectShapeObjs[3],[(innerWidth-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*-1.5,(innerHeight-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]);
-        phi.Goto(signal.obj,[(innerWidth - uiImg.signal_bar.width)/2,(innerHeight - uiImg.signal_bar.height)/2 - 500])
-        // #endregion 
+        phi.Goto(selectShapeAprObj,[(phi.width-uiImg.select_shape_bar.width)/2,(phi.height-uiImg.select_shape_bar.height)/2]);
+        phi.Goto(selectShapeObjs[0],[(phi.width-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*1.5,(phi.height-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]);
+        phi.Goto(selectShapeObjs[1],[(phi.width-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*0.5,(phi.height-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]);
+        phi.Goto(selectShapeObjs[2],[(phi.width-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*-0.5,(phi.height-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]);
+        phi.Goto(selectShapeObjs[3],[(phi.width-shapeBtnResize[0])/2- (shapeBtnResize[0] + shapeBtnMarginVer)*-1.5,(phi.height-uiImg.select_shape_bar.height)/2  + shapeBtnMarginHor/2],[shapeBtnSize[0]*shapeBtnRatio,shapeBtnSize[1]*shapeBtnRatio]);
+        phi.Goto(signal.obj,[(phi.width - uiImg.signal_bar.width)/2,(phi.height - uiImg.signal_bar.height)/2 - 500])
+
         uiSet = {
             gameMenuUI : {
-                back_box : phi.object(uiImg.back_box,[(innerWidth-uiImg.back_box.width)/2,(innerHeight-uiImg.back_box.height)/2],null),
-                long_bar : phi.object(uiImg.long_bar,[(innerWidth-uiImg.long_bar.width)/2,(innerHeight-uiImg.back_box.height)/2 + 50],null),
-                
-                join_btn : phi.object(uiImg.join_btn,[(innerWidth-uiImg.join_btn.width)/2 - uiImg.join_btn.width*1.5 - mainMenuBtnMargin*1.5,(innerHeight-uiImg.back_box.height)/2 + 180],null),
-                make_room_btn : phi.object(uiImg.make_room_btn,[(innerWidth-uiImg.make_room_btn.width)/2 - uiImg.make_room_btn.width*0.5 - mainMenuBtnMargin/2,(innerHeight-uiImg.back_box.height)/2 + 180],null),
-                dev_inf_btn : phi.object(uiImg.dev_inf_btn,[(innerWidth-uiImg.dev_inf_btn.width)/2 + uiImg.dev_inf_btn.width*0.5 + mainMenuBtnMargin/2,(innerHeight-uiImg.back_box.height)/2 + 180],null),
-                main_menu_btn : phi.object(uiImg.main_menu_btn,[(innerWidth-uiImg.main_menu_btn.width)/2 + uiImg.main_menu_btn.width*1.5 + mainMenuBtnMargin*1.5,(innerHeight-uiImg.back_box.height)/2 + 180],null),
+                back_box : scaleObj(uiImg.back_box,[(phi.width-uiImg.back_box.width)/2,(phi.height-uiImg.back_box.height)/2],null),
+                long_bar : scaleObj(uiImg.long_bar,[(phi.width-uiImg.long_bar.width)/2,(phi.height-uiImg.back_box.height)/2 + 50],null),
+                join_btn : scaleObj(uiImg.join_btn,[(phi.width-uiImg.join_btn.width)/2 - uiImg.join_btn.width*1.5 - mainMenuBtnMargin*1.5,(phi.height-uiImg.back_box.height)/2 + 180],null),
+                make_room_btn : scaleObj(uiImg.make_room_btn,[(phi.width-uiImg.make_room_btn.width)/2 - uiImg.make_room_btn.width*0.5 - mainMenuBtnMargin/2,(phi.height-uiImg.back_box.height)/2 + 180],null),
+                dev_inf_btn : scaleObj(uiImg.dev_inf_btn,[(phi.width-uiImg.dev_inf_btn.width)/2 + uiImg.dev_inf_btn.width*0.5 + mainMenuBtnMargin/2,(phi.height-uiImg.back_box.height)/2 + 180],null),
+                main_menu_btn : scaleObj(uiImg.main_menu_btn,[(phi.width-uiImg.main_menu_btn.width)/2 + uiImg.main_menu_btn.width*1.5 + mainMenuBtnMargin*1.5,(phi.height-uiImg.back_box.height)/2 + 180],null),
             },
             menuMain:{
-                main_itle : phi.object(uiImg.main_title,[(innerWidth-uiImg.main_title.width)/2,(innerHeight-uiImg.main_title.height)/2 * 0.2],null),
-                login_btn : phi.object(uiImg.login_btn,[(innerWidth-uiImg.login_btn.width)/2,(innerHeight-uiImg.login_btn.height)/2 + 150],null),
-                sign_up_btn : phi.object(uiImg.sign_up_btn,[(innerWidth-uiImg.sign_up_btn.width)/2,(innerHeight-uiImg.sign_up_btn.height)/2 + 250],null),
-                no_account_start_btn : phi.object(uiImg.no_account_start_btn,[(innerWidth-uiImg.no_account_start_btn.width)/2,(innerHeight-uiImg.no_account_start_btn.height)/2 + 350],null),
+                main_itle : scaleObj(uiImg.main_title,[(phi.width-uiImg.main_title.width)/2,((phi.height-uiImg.main_title.height)/2 * 0.2)  * phi.dpr],null),
+                login_btn : scaleObj(uiImg.login_btn,[(phi.width-uiImg.login_btn.width)/2,(phi.height-uiImg.login_btn.height)/2 + 150  * phi.dpr],null),
+                sign_up_btn : scaleObj(uiImg.sign_up_btn,[(phi.width-uiImg.sign_up_btn.width)/2 ,(phi.height-uiImg.sign_up_btn.height)/2 + 250  * phi.dpr],null),
+                no_account_start_btn : scaleObj(uiImg.no_account_start_btn,[(phi.width-uiImg.no_account_start_btn.width)/2,(phi.height-uiImg.no_account_start_btn.height)/2 + 350  * phi.dpr],null),
             },
             menuSignUp:{
-                back_box_basic : phi.object(uiImg.back_box_basic,[(innerWidth-uiImg.back_box_basic.width)/2,(innerHeight-uiImg.back_box_basic.height)/2],null),
-                input_bar_nickname : phi.object(uiImg.input_bar,[(innerWidth-uiImg.input_bar.width)/2,(innerHeight-uiImg.input_bar.height)/2 - 160],null),
-                input_bar_password : phi.object(uiImg.input_bar,[(innerWidth-uiImg.input_bar.width)/2,(innerHeight-uiImg.input_bar.height)/2 - 35],null),
-                input_bar_password_check : phi.object(uiImg.input_bar,[(innerWidth-uiImg.input_bar.width)/2,(innerHeight-uiImg.input_bar.height)/2 + 90],null),
-                submit_btn : phi.object(uiImg.sign_up_btn,[(innerWidth-uiImg.sign_up_btn.width)/2,(innerHeight-uiImg.sign_up_btn.height)/2 + 360],null),
+                back_box_basic : scaleObj(uiImg.back_box_basic,[(phi.width-uiImg.back_box_basic.width)/2,(phi.height-uiImg.back_box_basic.height)/2],null),
+                input_bar_nickname : scaleObj(uiImg.input_bar,[(phi.width-uiImg.input_bar.width)/2,(phi.height-uiImg.input_bar.height)/2 - 160],null),
+                input_bar_password : scaleObj(uiImg.input_bar,[(phi.width-uiImg.input_bar.width)/2,(phi.height-uiImg.input_bar.height)/2 - 35],null),
+                input_bar_password_check : scaleObj(uiImg.input_bar,[(phi.width-uiImg.input_bar.width)/2,(phi.height-uiImg.input_bar.height)/2 + 90],null),
+                submit_btn : scaleObj(uiImg.sign_up_btn,[(phi.width-uiImg.sign_up_btn.width)/2,(phi.height-uiImg.sign_up_btn.height)/2 + 360],null),
             },
             menuLogin:{
-                back_box_basic : phi.object(uiImg.back_box_basic,[(innerWidth-uiImg.back_box_basic.width)/2,(innerHeight-uiImg.back_box_basic.height)/2],null),
-                input_bar_nickname : phi.object(uiImg.input_bar,[(innerWidth-uiImg.input_bar.width)/2,(innerHeight-uiImg.input_bar.height)/2 - 80],null),
-                input_bar_password : phi.object(uiImg.input_bar,[(innerWidth-uiImg.input_bar.width)/2,(innerHeight-uiImg.input_bar.height)/2 + 40],null),
-                submit_btn : phi.object(uiImg.login_btn,[(innerWidth-uiImg.login_btn.width)/2,(innerHeight-uiImg.login_btn.height)/2 + 360],null),
+                back_box_basic : scaleObj(uiImg.back_box_basic,[(phi.width-uiImg.back_box_basic.width)/2,(phi.height-uiImg.back_box_basic.height)/2],null),
+                input_bar_nickname : scaleObj(uiImg.input_bar,[(phi.width-uiImg.input_bar.width)/2,(phi.height-uiImg.input_bar.height)/2 - 80],null),
+                input_bar_password : scaleObj(uiImg.input_bar,[(phi.width-uiImg.input_bar.width)/2,(phi.height-uiImg.input_bar.height)/2 + 40],null),
+                submit_btn : scaleObj(uiImg.login_btn,[(phi.width-uiImg.login_btn.width)/2,(phi.height-uiImg.login_btn.height)/2 + 360],null),
             },
             menuWinner:{
-                back_box_basic : phi.object(uiImg.back_box_basic,[(innerWidth-uiImg.back_box_basic.width)/2,(innerHeight-uiImg.back_box_basic.height)/2],null),
-                winner_profile_rect : phi.object(uiImg.winner_profile_rect,[(innerWidth-uiImg.winner_profile_rect.width)/2 - 300,(innerHeight-uiImg.winner_profile_rect.height)/2],null),
-                crown : phi.object(uiImg.crown,[(innerWidth-uiImg.crown.width)/2-300,(innerHeight-uiImg.crown.height)/2-100],null),
-                confirm_btn : phi.object(uiImg.confirm_btn,[(innerWidth-uiImg.confirm_btn.width)/2,(innerHeight-uiImg.confirm_btn.height)/2 + 360],null),
+                back_box_basic : scaleObj(uiImg.back_box_basic,[(phi.width-uiImg.back_box_basic.width)/2,(phi.height-uiImg.back_box_basic.height)/2],null),
+                winner_profile_rect : scaleObj(uiImg.winner_profile_rect,[(phi.width-uiImg.winner_profile_rect.width)/2 - 300,(phi.height-uiImg.winner_profile_rect.height)/2],null),
+                crown : scaleObj(uiImg.crown,[(phi.width-uiImg.crown.width)/2-300,(phi.height-uiImg.crown.height)/2-100],null),
+                confirm_btn : scaleObj(uiImg.confirm_btn,[(phi.width-uiImg.confirm_btn.width)/2,(phi.height-uiImg.confirm_btn.height)/2 + 360],null),
                 
             },     
             waitingRoomUI:{
-                back_box : phi.object(uiImg.back_box,[(innerWidth-uiImg.back_box.width)/2,(innerHeight-uiImg.back_box.height)/2],null),
-                long_bar : phi.object(uiImg.long_bar,[(innerWidth-uiImg.long_bar.width)/2,(innerHeight-uiImg.back_box.height)/2 + 50],null),
-                ready_btn : phi.object(uiImg.ready_btn,[(innerWidth-uiImg.ready_btn.width)/2 + 100,(innerHeight-uiImg.back_box.height)/2 + 180],null),
-                user_profile_0 : phi.object(uiImg.rect,[(innerWidth-uiImg.back_box.width)/2 + 50,(innerHeight-uiImg.back_box.height)/2 + 170],null),
-                user_profile_1 : phi.object(uiImg.rect,[(innerWidth-uiImg.back_box.width)/2 + 50,(innerHeight-uiImg.back_box.height)/2 + 270],null),
-                user_profile_2 : phi.object(uiImg.rect,[(innerWidth-uiImg.back_box.width)/2 + 50,(innerHeight-uiImg.back_box.height)/2 + 370],null),
-                user_profile_3 : phi.object(uiImg.rect,[(innerWidth-uiImg.back_box.width)/2 + 50,(innerHeight-uiImg.back_box.height)/2 + 470],null),
-                user_infbar_0 : phi.object(uiImg.short_bar,[(innerWidth-uiImg.back_box.width)/2 + 150,(innerHeight-uiImg.back_box.height)/2 + 170],null),
-                user_infbar_1 : phi.object(uiImg.short_bar,[(innerWidth-uiImg.back_box.width)/2 + 150,(innerHeight-uiImg.back_box.height)/2 + 270],null),
-                user_infbar_2 : phi.object(uiImg.short_bar,[(innerWidth-uiImg.back_box.width)/2 + 150,(innerHeight-uiImg.back_box.height)/2 + 370],null),
-                user_infbar_3 : phi.object(uiImg.short_bar,[(innerWidth-uiImg.back_box.width)/2 + 150,(innerHeight-uiImg.back_box.height)/2 + 470],null),
+                back_box : scaleObj(uiImg.back_box,[(phi.width-uiImg.back_box.width)/2,(phi.height-uiImg.back_box.height)/2],null),
+                long_bar : scaleObj(uiImg.long_bar,[(phi.width-uiImg.long_bar.width)/2,(phi.height-uiImg.back_box.height)/2 + 50],null),
+                ready_btn : scaleObj(uiImg.ready_btn,[(phi.width-uiImg.ready_btn.width)/2 + 100,(phi.height-uiImg.back_box.height)/2 + 180],null),
+                user_profile_0 : scaleObj(uiImg.rect,[(phi.width-uiImg.back_box.width)/2 + 50,(phi.height-uiImg.back_box.height)/2 + 170],null),
+                user_profile_1 : scaleObj(uiImg.rect,[(phi.width-uiImg.back_box.width)/2 + 50,(phi.height-uiImg.back_box.height)/2 + 270],null),
+                user_profile_2 : scaleObj(uiImg.rect,[(phi.width-uiImg.back_box.width)/2 + 50,(phi.height-uiImg.back_box.height)/2 + 370],null),
+                user_profile_3 : scaleObj(uiImg.rect,[(phi.width-uiImg.back_box.width)/2 + 50,(phi.height-uiImg.back_box.height)/2 + 470],null),
+                user_infbar_0 : scaleObj(uiImg.short_bar,[(phi.width-uiImg.back_box.width)/2 + 150,(phi.height-uiImg.back_box.height)/2 + 170],null),
+                user_infbar_1 : scaleObj(uiImg.short_bar,[(phi.width-uiImg.back_box.width)/2 + 150,(phi.height-uiImg.back_box.height)/2 + 270],null),
+                user_infbar_2 : scaleObj(uiImg.short_bar,[(phi.width-uiImg.back_box.width)/2 + 150,(phi.height-uiImg.back_box.height)/2 + 370],null),
+                user_infbar_3 : scaleObj(uiImg.short_bar,[(phi.width-uiImg.back_box.width)/2 + 150,(phi.height-uiImg.back_box.height)/2 + 470],null),
                 
             },
             common:{
-                discord_icon : phi.object(uiImg.discord_icon,[(innerWidth-uiImg.discord_icon.width) - 190,(innerHeight-uiImg.discord_icon.height)-20],null),
-                DGL_icon : phi.object(uiImg.DGL_icon,[(innerWidth-uiImg.DGL_icon.width)-100,(innerHeight-uiImg.DGL_icon.height)-20],null),
-                instagram_icon : phi.object(uiImg.instagram_icon,[(innerWidth-uiImg.instagram_icon.width)-20,(innerHeight-uiImg.instagram_icon.height)-20],null),
-                back_btn : phi.object(uiImg.back_btn,[-180,35],null),
+                discord_icon : scaleObj(uiImg.discord_icon,[(phi.width-uiImg.discord_icon.width) - 190,(phi.height-uiImg.discord_icon.height)-20],null),
+                DGL_icon : scaleObj(uiImg.DGL_icon,[(phi.width-uiImg.DGL_icon.width)-100,(phi.height-uiImg.DGL_icon.height)-20],null),
+                instagram_icon : scaleObj(uiImg.instagram_icon,[(phi.width-uiImg.instagram_icon.width)-20,(phi.height-uiImg.instagram_icon.height)-20],null),
+                back_btn : scaleObj(uiImg.back_btn,[-180,35],null),
             },
 
             ingameOnecard:{
-                table : phi.object(uiImg.table,[(innerWidth-uiImg.table.width)/2,(innerHeight-uiImg.table.height)+150],null),
-                bottom_bar : phi.object(uiImg.bottom_bar,[(innerWidth-uiImg.bottom_bar.width)/2,(innerHeight-uiImg.bottom_bar.height)+160],null),
+                table : scaleObj(uiImg.table,[(phi.width-uiImg.table.width)/2,(phi.height-uiImg.table.height)+150],null),
+                bottom_bar : scaleObj(uiImg.bottom_bar,[(phi.width-uiImg.bottom_bar.width)/2,(phi.height-uiImg.bottom_bar.height)+160],null),
 
             },
             eventMode:{
-                red_box : phi.object(uiImg.red_box,[(innerWidth-uiImg.red_box.width)/2,(innerHeight-uiImg.red_box.height)/2],null),
-                arrow_left:phi.object(uiImg.arrow_left,[(innerWidth-uiImg.arrow_left.width)/2 - 100,(innerHeight-uiImg.arrow_left.height)/2 + 20],null),
-                arrow_right:phi.object(uiImg.arrow_right,[(innerWidth-uiImg.arrow_left.width)/2 + 100,(innerHeight-uiImg.arrow_left.height)/2 + 20],null),
+                red_box : scaleObj(uiImg.red_box,[(phi.width-uiImg.red_box.width)/2,(phi.height-uiImg.red_box.height)/2],null),
+                arrow_left:scaleObj(uiImg.arrow_left,[(phi.width-uiImg.arrow_left.width)/2 - 100,(phi.height-uiImg.arrow_left.height)/2 + 20],null),
+                arrow_right:scaleObj(uiImg.arrow_right,[(phi.width-uiImg.arrow_left.width)/2 + 100,(phi.height-uiImg.arrow_left.height)/2 + 20],null),
                 
-                profile_margin_box_0:phi.object(uiImg.profile_margin_box,[(innerWidth-uiImg.profile_margin_box.width)/2 - uiImg.profile_margin_box.width*1.8,(innerHeight-uiImg.profile_margin_box.height)/2 + 130],null),
-                profile_margin_box_1:phi.object(uiImg.profile_margin_box,[(innerWidth-uiImg.profile_margin_box.width)/2 - uiImg.profile_margin_box.width*0.6,(innerHeight-uiImg.profile_margin_box.height)/2 + 130],null),
-                profile_margin_box_2:phi.object(uiImg.profile_margin_box,[(innerWidth-uiImg.profile_margin_box.width)/2 + uiImg.profile_margin_box.width*0.6,(innerHeight-uiImg.profile_margin_box.height)/2 + 130],null),
-                profile_margin_box_3:phi.object(uiImg.profile_margin_box,[(innerWidth-uiImg.profile_margin_box.width)/2 + uiImg.profile_margin_box.width*1.8,(innerHeight-uiImg.profile_margin_box.height)/2 + 130],null),
+                profile_margin_box_0:scaleObj(uiImg.profile_margin_box,[(phi.width-uiImg.profile_margin_box.width)/2 - uiImg.profile_margin_box.width*1.8,(phi.height-uiImg.profile_margin_box.height)/2 + 130],null),
+                profile_margin_box_1:scaleObj(uiImg.profile_margin_box,[(phi.width-uiImg.profile_margin_box.width)/2 - uiImg.profile_margin_box.width*0.6,(phi.height-uiImg.profile_margin_box.height)/2 + 130],null),
+                profile_margin_box_2:scaleObj(uiImg.profile_margin_box,[(phi.width-uiImg.profile_margin_box.width)/2 + uiImg.profile_margin_box.width*0.6,(phi.height-uiImg.profile_margin_box.height)/2 + 130],null),
+                profile_margin_box_3:scaleObj(uiImg.profile_margin_box,[(phi.width-uiImg.profile_margin_box.width)/2 + uiImg.profile_margin_box.width*1.8,(phi.height-uiImg.profile_margin_box.height)/2 + 130],null),
             
-                profile_0:phi.object(profileImg.santa,[(innerWidth-uiImg.profile_margin_box.width)/2 - uiImg.profile_margin_box.width*1.8 + (uiImg.profile_margin_box.width - profileImg.user.width)/2,(innerHeight-uiImg.profile_margin_box.height)/2 + 130 + (uiImg.profile_margin_box.height - profileImg.user.height)/2],null),
-                profile_1:phi.object(profileImg.elf,[(innerWidth-uiImg.profile_margin_box.width)/2 - uiImg.profile_margin_box.width*0.6 + (uiImg.profile_margin_box.width - profileImg.user.width)/2,(innerHeight-uiImg.profile_margin_box.height)/2 + 130 + (uiImg.profile_margin_box.height - profileImg.user.height)/2],null),
-                profile_2:phi.object(profileImg.rudolph,[(innerWidth-uiImg.profile_margin_box.width)/2 + uiImg.profile_margin_box.width*0.6 + (uiImg.profile_margin_box.width - profileImg.user.width)/2,(innerHeight-uiImg.profile_margin_box.height)/2 + 130 + (uiImg.profile_margin_box.height - profileImg.user.height)/2],null),
-                profile_3:phi.object(profileImg.user,[(innerWidth-uiImg.profile_margin_box.width)/2 + uiImg.profile_margin_box.width*1.8 + (uiImg.profile_margin_box.width - profileImg.user.width)/2,(innerHeight-uiImg.profile_margin_box.height)/2 + 130 + (uiImg.profile_margin_box.height - profileImg.user.height)/2],null),
+                profile_0:scaleObj(profileImg.santa,[(phi.width-uiImg.profile_margin_box.width)/2 - uiImg.profile_margin_box.width*1.8 + (uiImg.profile_margin_box.width - profileImg.user.width)/2,(phi.height-uiImg.profile_margin_box.height)/2 + 130 + (uiImg.profile_margin_box.height - profileImg.user.height)/2],null),
+                profile_1:scaleObj(profileImg.elf,[(phi.width-uiImg.profile_margin_box.width)/2 - uiImg.profile_margin_box.width*0.6 + (uiImg.profile_margin_box.width - profileImg.user.width)/2,(phi.height-uiImg.profile_margin_box.height)/2 + 130 + (uiImg.profile_margin_box.height - profileImg.user.height)/2],null),
+                profile_2:scaleObj(profileImg.rudolph,[(phi.width-uiImg.profile_margin_box.width)/2 + uiImg.profile_margin_box.width*0.6 + (uiImg.profile_margin_box.width - profileImg.user.width)/2,(phi.height-uiImg.profile_margin_box.height)/2 + 130 + (uiImg.profile_margin_box.height - profileImg.user.height)/2],null),
+                profile_3:scaleObj(profileImg.user,[(phi.width-uiImg.profile_margin_box.width)/2 + uiImg.profile_margin_box.width*1.8 + (uiImg.profile_margin_box.width - profileImg.user.width)/2,(phi.height-uiImg.profile_margin_box.height)/2 + 130 + (uiImg.profile_margin_box.height - profileImg.user.height)/2],null),
                 
-                confirm_btn:phi.object(uiImg.confirm_btn,[(innerWidth - uiImg.start_btn.width)/2,(innerHeight - uiImg.start_btn.height)/2 + 300],null),
+                confirm_btn:scaleObj(uiImg.confirm_btn,[(phi.width - uiImg.start_btn.width)/2,(phi.height - uiImg.start_btn.height)/2 + 300],null),
                 
             
             }
@@ -508,34 +516,26 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
         
     }
 
+
     let blitLayer = []
     function addBlit(obj){
         blitLayer.push(obj)
     }
 
-    const BASE_W = 1920;
-    const BASE_H = 1080;
-    window.uiScale = Math.min(
-        innerWidth / BASE_W,
-        innerHeight / BASE_H
-    )
+    
+    
 
     let resizeTimer
     function editPos(){
         phi.reSizeDisplay()
         resetUI()
-        textCanvas.width  = innerWidth;
-        textCanvas.height = innerHeight;
+        // textCanvas.width  = phi.width;
+        // textCanvas.height = phi.height;
     }
 
-    window.addEventListener('resize',()=>{
-        // clearTimeout(resizeTimer)
-        
-        phi.reSizeDisplay()
+    window.addEventListener('resize', () => {
         editPos()
-        // resizeTimer = setTimeout(()=>{
-        // },50)
-    })
+    });
     
     let BanLetter = [
         'NumLock',
@@ -577,6 +577,10 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
 
     ]
 
+    editPos()
+    window.resetUI()
+
+
     // #region input set
     addLoopObj(backLoopImg[1]); // 0
     addLoopObj(backLoopImg[1]);
@@ -598,24 +602,26 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
     // #endregion
 
 
+
+
+
     for (let i=0; i < 10; i++){ // back loop icon define
         const randint = phi.random(2,10)
         addLoopObj(backLoopImg[randint],[i*240 - backLoopImg[randint].width/2, - backLoopImg[randint].height/2]);
     }
 
-    editPos()
-    resetUI()
+    
 
     phi.mainLoop(() => {
-        ctx.clearRect(0, 0, textCanvas.width, textCanvas.height);
+        // ctx.clearRect(0, 0, textCanvas.width, textCanvas.height);
         phi.fill(24,118,70)
         loopSet(0,0,1,10);
-        loopSet(0,2,3,innerHeight-10-backLoopObj[1].height);
-        loopSet(1,4,5,(innerHeight-backLoopObj[1].height)*0.9);
-        loopSet(1,6,7,(innerHeight-backLoopObj[1].height)*0.1);
+        loopSet(0,2,3,phi.height-10-backLoopObj[1].height);
+        loopSet(1,4,5,(phi.height-backLoopObj[1].height)*0.9);
+        loopSet(1,6,7,(phi.height-backLoopObj[1].height)*0.1);
         
         for (let i=8; i<backLoopObj.length;i++){
-            const y = backLoopObj[i].y + innerHeight*0.4 - backLoopObj[i].y;
+            const y = backLoopObj[i].y + phi.height*0.4 - backLoopObj[i].y;
             phi.goto(backLoopObj[i],[
                 ((i-8)*(240) + backLoopIcon_Num) % (phi.canvas.width*1.3) - backLoopImg[2].width/2 - (phi.canvas.width*0.3)/2,
                 y
@@ -892,11 +898,11 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 
             }
 
-            const h = textCanvas.clientHeight
-            Text(`나의 닉네임 : ${window.nickname}`, [40,h-17], '25px', 'white')
-            Text(`현재턴 : ${window.turn}`, [700,h-17], '25px', 'white',)
+            const h = phi.height
+            phi.text(`나의 닉네임 : ${window.nickname}`, [40,h-17], '25px', 'white')
+            phi.text(`현재턴 : ${window.turn}`, [700,h-17], '25px', 'white',)
             if (window.attackAmount > 0){
-                Text(`+${window.attackAmount}`, [centerDeckPos[0]+window.cardSize[0]*1.5 + 10,centerDeckPos[1] - 20], '50px', 'red')
+                phi.text(`+${window.attackAmount}`, [centerDeckPos[0]+window.cardSize[0]*1.5 + 10,centerDeckPos[1] - 20], '50px', 'red')
             }
 
 
@@ -1065,7 +1071,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                cusor = ''
             }
 
-            Text('룸코드:' + codeInput.toUpperCase() + cusor, [(uiSet.gameMenuUI['long_bar'].x + 400),uiSet.gameMenuUI['long_bar'].y+52], '50px', 'black')
+            phi.text('룸코드:' + codeInput.toUpperCase() + cusor, [(uiSet.gameMenuUI['long_bar'].x + 400),uiSet.gameMenuUI['long_bar'].y+52], '50px', 'black')
 
 
 
@@ -1099,19 +1105,19 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                         if (window.players[pName]){
                             let text = window.players[pName].nickname
 
-                            Text(text,[ui.x+30,ui.y+30],'24px','black')
+                            phi.text(text,[ui.x+30,ui.y+30],'24px','black')
                             
                             text = window.players[pName].level
-                            Text('레벨:'+text,[ui.x+300,ui.y+30],'20px','orange')
+                            phi.text('레벨:'+text,[ui.x+300,ui.y+30],'20px','orange')
 
                             text = window.players[pName].rank
-                            Text('랭크:'+text,[ui.x+300,ui.y+55],'20px','red')
+                            phi.text('랭크:'+text,[ui.x+300,ui.y+55],'20px','red')
 
                             text = window.players[pName].description
-                            Text(text,[ui.x+25,ui.y+55],'17px','black')
+                            phi.text(text,[ui.x+25,ui.y+55],'17px','black')
 
                         } else {
-                            Text('[플레이어 없음]',[ui.x+15,ui.y+44],'30px','black')
+                            phi.text('[플레이어 없음]',[ui.x+15,ui.y+44],'30px','black')
                         }
                     }
                     
@@ -1129,7 +1135,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                     }
                 }
                 if (name == 'long_bar'){
-                    Text('룸코드:' + window.roomCode, [(uiSet.waitingRoomUI['long_bar'].x + 400),uiSet.waitingRoomUI['long_bar'].y+52], '50px', 'black')
+                    phi.text('룸코드:' + window.roomCode, [(uiSet.waitingRoomUI['long_bar'].x + 400),uiSet.waitingRoomUI['long_bar'].y+52], '50px', 'black')
                 } else if (name == 'ready_btn'){
 
                     if (phi.isEncounterPos(fixObj,mousePos) && click ){
@@ -1375,7 +1381,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                         if (inputDatas.signUpNick.length == 5){inputCusor.signUpNick = ''}
                     }
                 } else {inputCusor.signUpNick = ''}
-                Text('닉네임 : ' + inputDatas.signUpNick + inputCusor.signUpNick, [(uiSet.menuSignUp.input_bar_nickname.x + 50),uiSet.menuSignUp.input_bar_nickname.y+65], '50px', 'white')
+                phi.text('닉네임 : ' + inputDatas.signUpNick + inputCusor.signUpNick, [(uiSet.menuSignUp.input_bar_nickname.x + 50),uiSet.menuSignUp.input_bar_nickname.y+65], '50px', 'white')
                 
 
 
@@ -1388,9 +1394,9 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 } else {inputCusor.signUpPw = ''}
                 
                 if (inputDatas.signUpPw.length < 32){
-                    Text('비밀번호 : ' + PasswordBlind(inputDatas.signUpPw) + inputCusor.signUpPw, [(uiSet.menuSignUp.input_bar_password.x + 50),uiSet.menuSignUp.input_bar_password.y+65], '50px', 'white')
+                    phi.text('비밀번호 : ' + PasswordBlind(inputDatas.signUpPw) + inputCusor.signUpPw, [(uiSet.menuSignUp.input_bar_password.x + 50),uiSet.menuSignUp.input_bar_password.y+65], '50px', 'white')
                 } else {
-                    Text('비밀번호 : ******************************...', [(uiSet.menuSignUp.input_bar_password.x + 50),uiSet.menuSignUp.input_bar_password.y+65], '50px', 'white')
+                    phi.text('비밀번호 : ******************************...', [(uiSet.menuSignUp.input_bar_password.x + 50),uiSet.menuSignUp.input_bar_password.y+65], '50px', 'white')
                 }
 
                 if (inputSelects.signUpPwC  == true){
@@ -1402,9 +1408,9 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 } else {inputCusor.signUpPwC = ''}
                 
                 if (inputDatas.signUpPwC.length < 28){
-                    Text('비밀번호확인 : ' + PasswordBlind(inputDatas.signUpPwC) + inputCusor.signUpPwC, [(uiSet.menuSignUp.input_bar_password_check.x + 50),uiSet.menuSignUp.input_bar_password_check.y+65], '50px', 'white')
+                    phi.text('비밀번호확인 : ' + PasswordBlind(inputDatas.signUpPwC) + inputCusor.signUpPwC, [(uiSet.menuSignUp.input_bar_password_check.x + 50),uiSet.menuSignUp.input_bar_password_check.y+65], '50px', 'white')
                 } else {
-                    Text('비밀번호확인 : **************************...', [(uiSet.menuSignUp.input_bar_password_check.x + 50),uiSet.menuSignUp.input_bar_password_check.y+65], '50px', 'white')
+                    phi.text('비밀번호확인 : **************************...', [(uiSet.menuSignUp.input_bar_password_check.x + 50),uiSet.menuSignUp.input_bar_password_check.y+65], '50px', 'white')
                 }
                 
             // #endregion
@@ -1516,7 +1522,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                         if (inputDatas.loginNick.length == 5){inputCusor.loginNick = ''}
                     }
                 } else {inputCusor.loginNick = ''}
-                Text('닉네임 : ' + inputDatas.loginNick + inputCusor.loginNick, [(uiSet.menuLogin.input_bar_nickname.x + 50),uiSet.menuLogin.input_bar_nickname.y+65], '50px', 'white')
+                phi.text('닉네임 : ' + inputDatas.loginNick + inputCusor.loginNick, [(uiSet.menuLogin.input_bar_nickname.x + 50),uiSet.menuLogin.input_bar_nickname.y+65], '50px', 'white')
                 
 
 
@@ -1529,9 +1535,9 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 } else {inputCusor.loginPw = ''}
                 
                 if (inputDatas.loginPw.length < 32){
-                    Text('비밀번호 : ' + PasswordBlind(inputDatas.loginPw) + inputCusor.loginPw, [(uiSet.menuLogin.input_bar_password.x + 50),uiSet.menuLogin.input_bar_password.y+65], '50px', 'white')
+                    phi.text('비밀번호 : ' + PasswordBlind(inputDatas.loginPw) + inputCusor.loginPw, [(uiSet.menuLogin.input_bar_password.x + 50),uiSet.menuLogin.input_bar_password.y+65], '50px', 'white')
                 } else {
-                    Text('비밀번호 : ******************************...', [(uiSet.menuLogin.input_bar_password.x + 50),uiSet.menuLogin.input_bar_password.y+65], '50px', 'white')
+                    phi.text('비밀번호 : ******************************...', [(uiSet.menuLogin.input_bar_password.x + 50),uiSet.menuLogin.input_bar_password.y+65], '50px', 'white')
                 }
 
 
@@ -1566,13 +1572,13 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 if (name == 'winner_profile_rect'){
                     if (players[window.winner]){
                         const obj = phi.object(profileImg[players[window.winner].profile],[ui.x,ui.y],[ui.width,ui.height])
-                        Text(window.winner,[ui.x+190,ui.y + 100],'80px','white')
+                        phi.text(window.winner,[ui.x+190,ui.y + 100],'80px','white')
                         phi.blit(obj)
 
                         
                     } else {
                         const obj = phi.object(profileImg['noplayer'],[ui.x,ui.y],[ui.width,ui.height])
-                        Text('ERROR',[ui.x+190,ui.y + 100],'80px','white')
+                        phi.text('ERROR',[ui.x+190,ui.y + 100],'80px','white')
                         phi.blit(obj)
                     }
                 } else if (name == 'confirm_btn'){
@@ -1589,15 +1595,15 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
                 window.scene = 'menu-main'
                 window.sceneStartFlag = false
             }
-            Text('이벤트모드',[innerWidth/2,innerHeight/2 - 100],'60px','white','basic','center')
-            Text('esc로 나가기',[innerWidth/2,innerHeight/2 - 55],'20px','white','basic','center')
-            Text('<선택된계정>',[innerWidth/2 + 250,innerHeight/2 -100],'30px','white','basic','center')
-            Text('닉네임',[innerWidth/2 + 250,innerHeight/2 -60],'20px','white','basic','center')
+            phi.text('이벤트모드',[phi.width/2,phi.height/2 - 100],'60px','white','basic','center')
+            phi.text('esc로 나가기',[phi.width/2,phi.height/2 - 55],'20px','white','basic','center')
+            phi.text('<선택된계정>',[phi.width/2 + 250,phi.height/2 -100],'30px','white','basic','center')
+            phi.text('닉네임',[phi.width/2 + 250,phi.height/2 -60],'20px','white','basic','center')
             const nickname_ = `${window.eventModeSelectAccount}${window.eventModeNum}`
-            Text(nickname_,[innerWidth/2 + 250,innerHeight/2 -30],'30px','white','basic','center')
-            Text('비밀번호',[innerWidth/2 + 250,innerHeight/2 + 20],'20px','white','basic','center')
-            Text(`${window.eventModeSelectPw}`,[innerWidth/2 + 250,innerHeight/2 + 50],'30px','white','basic','center')
-            Text(`${window.eventModeNum}`,[innerWidth/2,innerHeight/2 + 35],'55px','white','basic','center')
+            phi.text(nickname_,[phi.width/2 + 250,phi.height/2 -30],'30px','white','basic','center')
+            phi.text('비밀번호',[phi.width/2 + 250,phi.height/2 + 20],'20px','white','basic','center')
+            phi.text(`${window.eventModeSelectPw}`,[phi.width/2 + 250,phi.height/2 + 50],'30px','white','basic','center')
+            phi.text(`${window.eventModeNum}`,[phi.width/2,phi.height/2 + 35],'55px','white','basic','center')
 
            
             for(let name in uiSet.eventMode){
@@ -1695,11 +1701,14 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
 
         if (window.scene !== 'ingmae-onecard'){
 
-            const h = textCanvas.clientHeight
-            Text('copyright 2025 white studio. All rights reserved', [10,h-30], '20px', 'white')
-            Text('Certain rights reserved by DLG', [10,h-10], '20px', 'white')
+            const h = phi.height
+            phi.text('copyright 2025 white studio. All rights reserved', [10,h-30], '20px', 'white')
+            phi.text('Certain rights reserved by DLG', [10,h-10], '20px', 'white')
 
-            phi.blit(uiSet.discord_icon,[0,0],null)
+            // console.log(uiSet.common.discord_icon)
+            phi.blit(uiSet.common.discord_icon);
+
+            // null
             for (let name in uiSet.common){
                 let ui = uiSet.common[name];
                 
@@ -1772,11 +1781,11 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
 
         phi.blit(signal.obj)
         if (signal.timer > Date.now()){
-            phi.moveY(signal.obj,(signal.obj.startY - signal.obj.y)/7)
+            phi.moveY(signal.obj,(signal.obj.height/2 - signal.obj.y)/7)
         } else {
-            phi.moveY(signal.obj,(signal.obj.startY-500 - signal.obj.y)/20)
+            phi.moveY(signal.obj,((0-signal.obj.height-2 - signal.obj.y)/7))
         }
-        Text(signal.text, [(innerWidth/2),signal.obj.y+48], '40px', 'black',undefined,'center')
+        phi.text(signal.text, [(phi.width/2),signal.obj.y+48], '40px', 'black',undefined,'center')
 
 
 
@@ -1791,10 +1800,18 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""
 
 })();
 
+document.addEventListener('mousemove', (e) => {
+    const canvas = document.getElementById('display-canvas');
+    const rect = canvas.getBoundingClientRect();
 
-document.addEventListener('mousemove',(e)=>{
-    mousePos = [e.offsetX,e.offsetY];
-})
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    mousePos = [
+        (e.clientX - rect.left) * scaleX,
+        (e.clientY - rect.top) * scaleY
+    ];
+});
 
 
 document.addEventListener('click',()=>{

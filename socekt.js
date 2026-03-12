@@ -2,14 +2,14 @@
 import {PHI} from "/@phi/src/script/PHI.js"
 import  {onecard_attackCard,onecard_attackCardAmount,onecard_cards} from '/card.js'
 
-const phi = new PHI("canvas");
+const phi = new PHI("display-canvas");
 
 export function online(){
     // const wsUrl =window.location.protocol === 'https:'
     //     ? `wss://${window.location.host}/ws`
     //     : `ws://${window.location.host}/ws`;
 
-    const wsUrl = 'ws://localhost:3000';
+    const wsUrl = 'ws://localhost:65535';
 
 
 
